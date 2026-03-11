@@ -11,7 +11,8 @@ import os, re, time, json, logging, argparse
 import xml.etree.ElementTree as ET
 import requests
 from supabase import create_client
-import google.generativeai as genai
+from google import genai
+from google.genai import types
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
 log = logging.getLogger(__name__)
@@ -22,8 +23,8 @@ SUPABASE_KEY   = os.environ["SUPABASE_SERVICE_KEY"]
 GEMINI_API_KEY = os.environ["GEMINI_API_KEY"]
 HOUREI_API_KEY = os.environ.get("HOUREI_API_KEY", "")
 
-supabase = create_client(SUPABASE_URL, SUPABASE_KEY)
-genai.configure(api_key=GEMINI_API_KEY)
+supabase   = create_client(SUPABASE_URL, SUPABASE_KEY)
+genai_client = genai.Client(api_key=GEMINI_API_KEY)
 
 # ── 법령 정의 (법령번호 = e-Gov 실제 코드) ────────────────────────────────────
 JP_LAWS = [
@@ -135,7 +136,7 @@ def split_chunks(articles: list[dict]) -> list[dict]:
     return chunks
 
 # ── 임베딩 생성 ────────────────────────────────────────────────────────────────
-EMBED_MODEL = "models/text-embedding-004"
+EMBED_MODEL = "text-embedding-004"
 BATCH_SIZE  = 50
 
 def embed_chunks(chunks: list[dict]) -> list[dict]:
@@ -143,13 +144,13 @@ def embed_chunks(chunks: list[dict]) -> list[dict]:
         batch = chunks[i:i+BATCH_SIZE]
         texts = [f"{c['title']} {c['text']}" for c in batch]
         try:
-            result = genai.embed_content(
+            result = genai_client.models.embed_content(
                 model=EMBED_MODEL,
-                content=texts,
-                task_type="RETRIEVAL_DOCUMENT",
+                contents=texts,
+                config=types.EmbedContentConfig(task_type="RETRIEVAL_DOCUMENT"),
             )
-            for j, emb in enumerate(result["embedding"]):
-                batch[j]["embedding"] = emb
+            for j, emb in enumerate(result.embeddings):
+                batch[j]["embedding"] = emb.values
             log.info(f"  임베딩: {i+len(batch)}/{len(chunks)}")
         except Exception as e:
             log.error(f"  임베딩 실패 (배치 {i}): {e}")
