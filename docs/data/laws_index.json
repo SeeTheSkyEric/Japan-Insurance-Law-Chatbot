@@ -1,0 +1,95 @@
+{
+  "updated_at": "2026-03-11",
+  "laws": [
+    {
+      "id": "JP-01",
+      "name_ja": "保険法",
+      "name_ko": "보험법",
+      "country": "JP",
+      "category": [
+        "보험사",
+        "소비자보호"
+      ],
+      "phase": 1
+    },
+    {
+      "id": "JP-02",
+      "name_ja": "保険業法",
+      "name_ko": "보험업법",
+      "country": "JP",
+      "category": [
+        "보험사",
+        "허가·감독",
+        "보험대리점"
+      ],
+      "phase": 1
+    },
+    {
+      "id": "JP-05",
+      "name_ja": "金融サービスの提供及び利用環境の整備等に関する法律",
+      "name_ko": "금융서비스제공법",
+      "country": "JP",
+      "category": [
+        "소비자보호",
+        "인슈어테크"
+      ],
+      "phase": 1
+    },
+    {
+      "id": "JP-07",
+      "name_ja": "金融商品取引法",
+      "name_ko": "금융상품거래법",
+      "country": "JP",
+      "category": [
+        "인슈어테크",
+        "소비자보호"
+      ],
+      "phase": 1
+    },
+    {
+      "id": "KR-01",
+      "name_ja": "",
+      "name_ko": "상법",
+      "country": "KR",
+      "category": [
+        "보험사",
+        "소비자보호"
+      ],
+      "phase": 1
+    },
+    {
+      "id": "KR-02",
+      "name_ja": "",
+      "name_ko": "보험업법",
+      "country": "KR",
+      "category": [
+        "보험사",
+        "허가·감독",
+        "보험대리점"
+      ],
+      "phase": 1
+    },
+    {
+      "id": "KR-07",
+      "name_ja": "",
+      "name_ko": "금융소비자보호법",
+      "country": "KR",
+      "category": [
+        "소비자보호",
+        "보험대리점"
+      ],
+      "phase": 1
+    },
+    {
+      "id": "KR-11",
+      "name_ja": "",
+      "name_ko": "자본시장법",
+      "country": "KR",
+      "category": [
+        "인슈어테크",
+        "소비자보호"
+      ],
+      "phase": 1
+    }
+  ]
+}
