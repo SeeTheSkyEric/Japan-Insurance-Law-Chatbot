@@ -135,7 +135,7 @@ def split_chunks(articles: list[dict]) -> list[dict]:
 # ── 임베딩 생성 ────────────────────────────────────────────────────────────────
 EMBED_MODEL = "text-embedding-004"
 BATCH_SIZE  = 50
-GEMINI_EMBED_URL = "https://generativelanguage.googleapis.com/v1/models/{model}:embedContent?key={key}"
+GEMINI_EMBED_URL = "https://generativelanguage.googleapis.com/v1beta/models/{model}:embedContent?key={key}"
 
 def embed_single(text: str) -> list[float]:
     """Gemini REST API로 임베딩 생성 (SDK 없이 직접 호출)"""
