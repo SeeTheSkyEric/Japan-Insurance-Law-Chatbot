@@ -173,23 +173,34 @@ def upsert_laws(law_list: list[dict], country: str):
     log.info(f"  laws upsert: {len(rows)}건")
 
 def upsert_chunks(chunks: list[dict]):
+    # 중복 ID 제거 (마지막 것 유지)
+    seen = {}
+    for c in chunks:
+        seen[c["id"]] = c
+    chunks = list(seen.values())
+    log.info(f"  중복 제거 후 청크 수: {len(chunks)}")
+
+    # embedding 있는 것
     rows = [{
         "id": c["id"], "law_id": c["law_id"], "article": c["article"],
         "title": c["title"], "text": c["text"],
         "keywords": c["keywords"], "category": c["category"],
         "embedding": c["embedding"],
     } for c in chunks if c.get("embedding") is not None]
+    for i in range(0, len(rows), 50):
+        supabase.table("chunks").upsert(rows[i:i+50]).execute()
+        log.info(f"  chunks upsert (with emb): {min(i+50, len(rows))}/{len(rows)}")
 
-    # embedding 없는 청크는 별도로 저장 (embedding 컬럼 제외)
+    # embedding 없는 것
     rows_no_emb = [{
         "id": c["id"], "law_id": c["law_id"], "article": c["article"],
         "title": c["title"], "text": c["text"],
         "keywords": c["keywords"], "category": c["category"],
     } for c in chunks if c.get("embedding") is None]
+    for i in range(0, len(rows_no_emb), 50):
+        supabase.table("chunks").upsert(rows_no_emb[i:i+50]).execute()
     if rows_no_emb:
-        for i in range(0, len(rows_no_emb), 50):
-            supabase.table("chunks").upsert(rows_no_emb[i:i+50]).execute()
-        log.info(f"  embedding 없는 청크 저장: {len(rows_no_emb)}건")
+        log.info(f"  chunks upsert (no emb): {len(rows_no_emb)}건")
     for i in range(0, len(rows), 50):
         supabase.table("chunks").upsert(rows[i:i+50]).execute()
         log.info(f"  chunks upsert: {min(i+50, len(rows))}/{len(rows)}")
