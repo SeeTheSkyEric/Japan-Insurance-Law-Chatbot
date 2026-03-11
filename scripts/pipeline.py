@@ -157,9 +157,9 @@ def embed_chunks(chunks: list[dict]) -> list[dict]:
             if (i + 1) % 10 == 0:
                 log.info(f"  임베딩: {i+1}/{len(chunks)}")
         except Exception as e:
-            log.error(f"  임베딩 실패 ({c['id']}): {e}")
-            raise
-        time.sleep(0.5)  # Rate limit 방지
+            log.warning(f"  임베딩 실패 ({c['id']}), 스킵: {e}")
+            c["embedding"] = None  # 실패해도 계속 진행
+        time.sleep(0.5)
     return chunks
 
 # ── Supabase UPSERT ────────────────────────────────────────────────────────────
@@ -178,7 +178,18 @@ def upsert_chunks(chunks: list[dict]):
         "title": c["title"], "text": c["text"],
         "keywords": c["keywords"], "category": c["category"],
         "embedding": c["embedding"],
-    } for c in chunks if "embedding" in c]
+    } for c in chunks if c.get("embedding") is not None]
+
+    # embedding 없는 청크는 별도로 저장 (embedding 컬럼 제외)
+    rows_no_emb = [{
+        "id": c["id"], "law_id": c["law_id"], "article": c["article"],
+        "title": c["title"], "text": c["text"],
+        "keywords": c["keywords"], "category": c["category"],
+    } for c in chunks if c.get("embedding") is None]
+    if rows_no_emb:
+        for i in range(0, len(rows_no_emb), 50):
+            supabase.table("chunks").upsert(rows_no_emb[i:i+50]).execute()
+        log.info(f"  embedding 없는 청크 저장: {len(rows_no_emb)}건")
     for i in range(0, len(rows), 50):
         supabase.table("chunks").upsert(rows[i:i+50]).execute()
         log.info(f"  chunks upsert: {min(i+50, len(rows))}/{len(rows)}")
