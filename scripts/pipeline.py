@@ -11,7 +11,6 @@ import os, re, time, json, logging, argparse
 import xml.etree.ElementTree as ET
 import requests
 from supabase import create_client
-import google.generativeai as genai
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
 log = logging.getLogger(__name__)
@@ -23,7 +22,6 @@ GEMINI_API_KEY = os.environ["GEMINI_API_KEY"]
 HOUREI_API_KEY = os.environ.get("HOUREI_API_KEY", "")
 
 supabase = create_client(SUPABASE_URL, SUPABASE_KEY)
-genai.configure(api_key=GEMINI_API_KEY)
 
 # ── 법령 정의 (법령번호 = e-Gov 실제 코드) ────────────────────────────────────
 JP_LAWS = [
@@ -135,26 +133,33 @@ def split_chunks(articles: list[dict]) -> list[dict]:
     return chunks
 
 # ── 임베딩 생성 ────────────────────────────────────────────────────────────────
-EMBED_MODEL = "models/embedding-001"
+EMBED_MODEL = "text-embedding-004"
 BATCH_SIZE  = 50
+GEMINI_EMBED_URL = "https://generativelanguage.googleapis.com/v1/models/{model}:embedContent?key={key}"
+
+def embed_single(text: str) -> list[float]:
+    """Gemini REST API로 임베딩 생성 (SDK 없이 직접 호출)"""
+    url = GEMINI_EMBED_URL.format(model=EMBED_MODEL, key=GEMINI_API_KEY)
+    body = {
+        "model": f"models/{EMBED_MODEL}",
+        "content": {"parts": [{"text": text}]},
+        "taskType": "RETRIEVAL_DOCUMENT",
+    }
+    r = requests.post(url, json=body, timeout=30)
+    r.raise_for_status()
+    return r.json()["embedding"]["values"]
 
 def embed_chunks(chunks: list[dict]) -> list[dict]:
-    for i in range(0, len(chunks), BATCH_SIZE):
-        batch = chunks[i:i+BATCH_SIZE]
+    for i, c in enumerate(chunks):
         try:
-            for j, c in enumerate(batch):
-                text = f"{c['title']} {c['text']}"
-                result = genai.embed_content(
-                    model=EMBED_MODEL,
-                    content=text,
-                    task_type="retrieval_document",
-                )
-                batch[j]["embedding"] = result["embedding"]
-            log.info(f"  임베딩: {i+len(batch)}/{len(chunks)}")
+            text = f"{c['title']} {c['text']}"
+            c["embedding"] = embed_single(text)
+            if (i + 1) % 10 == 0:
+                log.info(f"  임베딩: {i+1}/{len(chunks)}")
         except Exception as e:
-            log.error(f"  임베딩 실패 (배치 {i}): {e}")
+            log.error(f"  임베딩 실패 ({c['id']}): {e}")
             raise
-        time.sleep(1)
+        time.sleep(0.5)  # Rate limit 방지
     return chunks
 
 # ── Supabase UPSERT ────────────────────────────────────────────────────────────
