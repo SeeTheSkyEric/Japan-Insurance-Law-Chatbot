@@ -27,10 +27,10 @@ genai.configure(api_key=GEMINI_API_KEY)
 
 # ── 법령 정의 (법령번호 = e-Gov 실제 코드) ────────────────────────────────────
 JP_LAWS = [
-    {"id":"JP-01","law_code":"H20HO056", "name_ja":"保険法",         "name_ko":"보험법",           "category":["보험사","소비자보호"]},
-    {"id":"JP-02","law_code":"H07HO105", "name_ja":"保険業法",        "name_ko":"보험업법",          "category":["보험사","허가·감독","보험대리점"]},
-    {"id":"JP-05","law_code":"R02HO050", "name_ja":"金融サービスの提供及び利用環境の整備等に関する法律","name_ko":"금융서비스제공법","category":["소비자보호","인슈어테크"]},
-    {"id":"JP-07","law_code":"S23HO025", "name_ja":"金融商品取引法",  "name_ko":"금융상품거래법",    "category":["인슈어테크","소비자보호"]},
+    {"id":"JP-01","law_code":"420AC0000000056", "name_ja":"保険法",         "name_ko":"보험법",           "category":["보험사","소비자보호"]},
+    {"id":"JP-02","law_code":"407AC0000000105", "name_ja":"保険業法",        "name_ko":"보험업법",          "category":["보험사","허가·감독","보험대리점"]},
+    {"id":"JP-05","law_code":"", "name_ja":"金融サービスの提供及び利用環境の整備等に関する法律","name_ko":"금융서비스제공법","category":["소비자보호","인슈어테크"]},  # TODO: law_code 확인 필요
+    {"id":"JP-07","law_code":"323AC0000000025", "name_ja":"金融商品取引法",  "name_ko":"금융상품거래법",    "category":["인슈어테크","소비자보호"]},
 ]
 
 KR_LAWS = [
@@ -211,6 +211,9 @@ def run(country: str):
         upsert_laws(JP_LAWS, "JP")
         all_chunks = []
         for law in JP_LAWS:
+            if not law["law_code"]:
+                log.warning(f"  {law['id']} 스킵: law_code 미확인")
+                continue
             try:
                 articles = fetch_jp_law(law)
                 all_chunks.extend(split_chunks(articles))
