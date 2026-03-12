@@ -1,9 +1,9 @@
 // Vercel Serverless Function
-// 역할: ① Supabase 키워드 검색 → ② Gemini 답변 생성
+// 역할: ① Supabase 키워드 검색 → ② Claude Haiku 답변 생성
 
 const SUPABASE_URL = process.env.SUPABASE_URL;
 const SUPABASE_KEY = process.env.SUPABASE_SERVICE_KEY;
-const GEMINI_KEY   = process.env.GEMINI_API_KEY;
+const CLAUDE_KEY   = process.env.CLAUDE_API_KEY;
 
 module.exports = async function handler(req, res) {
   res.setHeader("Access-Control-Allow-Origin", "*");
@@ -39,9 +39,8 @@ module.exports = async function handler(req, res) {
       }
     }
 
-    // ── ② Gemini 호출 ────────────────────────────────────────────────────────
+    // ── ② 마지막 user 메시지에 법령 컨텍스트 주입 ────────────────────────────
     const lastMessages = [...messages];
-    // 마지막 user 메시지에 법령 컨텍스트 주입
     if (contextChunks && lastMessages.length > 0) {
       const last = lastMessages[lastMessages.length - 1];
       if (last.role === "user") {
@@ -52,36 +51,36 @@ module.exports = async function handler(req, res) {
       }
     }
 
-    const geminiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${GEMINI_KEY}`;
-    const body = {
-      system_instruction: { parts: [{ text: system }] },
-      contents: lastMessages.map(m => ({
-        role: m.role === "assistant" ? "model" : "user",
-        parts: [{ text: m.content }],
-      })),
-      generationConfig: {
-        temperature: 0.3,
-        maxOutputTokens: 4000,
-      },
-    };
-
-    const gRes = await fetch(geminiUrl, {
+    // ── ③ Claude Haiku API 호출 ───────────────────────────────────────────────
+    const claudeRes = await fetch("https://api.anthropic.com/v1/messages", {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(body),
+      headers: {
+        "Content-Type":      "application/json",
+        "x-api-key":         CLAUDE_KEY,
+        "anthropic-version": "2023-06-01",
+      },
+      body: JSON.stringify({
+        model:      "claude-haiku-4-5-20251001",
+        max_tokens: 4000,
+        system:     system,
+        messages:   lastMessages,
+      }),
     });
 
-    const data = await gRes.json();
-    if (!gRes.ok) {
-      console.error("Gemini 오류:", JSON.stringify(data));
-      // Gemini 에러도 200으로 반환 (클라이언트가 받을 수 있도록)
-      return res.status(200).json({ text: `Gemini 오류 (${gRes.status}): ${data?.error?.message || JSON.stringify(data)}` });
+    const data = await claudeRes.json();
+
+    if (!claudeRes.ok) {
+      console.error("Claude 오류:", JSON.stringify(data));
+      return res.status(200).json({
+        text: `Claude 오류 (${claudeRes.status}): ${data?.error?.message || JSON.stringify(data)}`
+      });
     }
 
-    const text = data.candidates?.[0]?.content?.parts?.[0]?.text || "";
+    const text = data.content?.[0]?.text || "응답을 받지 못했습니다.";
     return res.status(200).json({ text, hasContext: !!contextChunks });
 
   } catch (e) {
-    return res.status(500).json({ error: e.message });
+    console.error("서버 오류:", e.message);
+    return res.status(200).json({ text: `서버 오류: ${e.message}` });
   }
-}
+};
