@@ -152,10 +152,10 @@
 <script>
 // ── 설정 ─────────────────────────────────────────────────────────────────────
 // TODO: Vercel 배포 후 실제 URL로 교체
-const VERCEL_URL  = "https://japan-insurance-law-chatbot.vercel.app/api/chat";
+const VERCEL_URL  = "https://your-project.vercel.app/api/chat";
 const LAWS_INDEX  = "./data/laws_index.json";
 const SUPABASE_URL = "https://rkkzpzkzhntmrblbqiis.supabase.co";
-const SUPABASE_KEY = "sb_publishable_InLulrU4pUHVUk_z-ZyOTQ_2k6pJyj6"; // TODO: Supabase Publishable key 입력
+const SUPABASE_KEY = ""; // TODO: Supabase Publishable key 입력
 
 // ── 탭 전환 ──────────────────────────────────────────────────────────────────
 function switchTab(tab) {
@@ -207,9 +207,9 @@ async function sendMessage() {
   addMsg("user", query);
   input.value = "";
   document.getElementById("send-btn").disabled = true;
-  const loadingId = addLoading();
 
-  history.push({ role: "user", content: query });
+  const loadingId = addLoading();
+    history.push({ role: "user", content: query });
 
   try {
     const r = await fetch(VERCEL_URL, {
@@ -221,8 +221,9 @@ async function sendMessage() {
     const text = data.text || "오류가 발생했습니다.";
     removeLoading(loadingId);
     history.push({ role: "assistant", content: text });
+    // 히스토리 5턴으로 제한
     if (history.length > 10) history = history.slice(-10);
-    addBotMsg(text, "");
+    addBotMsg(text, chunks);
   } catch (e) {
     removeLoading(loadingId);
     addMsg("bot", `오류: ${e.message}`);
@@ -239,7 +240,7 @@ function addMsg(role, text) {
   return div;
 }
 
-function addBotMsg(text, "") {
+function addBotMsg(text) {
   const div = document.createElement("div");
   div.className = "msg bot";
 
@@ -264,8 +265,8 @@ function addBotMsg(text, "") {
   }
   if (!matched) html = `<div class="section-content">${marked.parse(text)}</div>`;
 
-  // 참조 법령 칩
-  const lawIds = [...new Set((chunks.match(/\[([A-Z]{2}-\d+)/g) || []).map(m => m.slice(1)))];
+  // 참조 법령 칩 (Vercel에서 반환된 law_id 기반)
+  const lawIds = [...new Set((text.match(/\[([A-Z]{2}-\d+)/g) || []).map(m => m.slice(1)))];
   if (lawIds.length) {
     html += `<div class="refs">${lawIds.map(id => `<span class="ref-chip" onclick="showLawModal('${id}')">${id}</span>`).join("")}</div>`;
   }
