@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-03-11",
+  "updated_at": "2026-03-12",
   "laws": [
     {
       "id": "JP-01",
@@ -49,7 +49,7 @@
     {
       "id": "KR-01",
       "name_ja": "",
-      "name_ko": "상법",
+      "name_ko": "상법 (보험편)",
       "country": "KR",
       "category": [
         "보험사",
@@ -72,7 +72,7 @@
     {
       "id": "KR-07",
       "name_ja": "",
-      "name_ko": "금융소비자보호법",
+      "name_ko": "금융소비자보호에 관한 법률",
       "country": "KR",
       "category": [
         "소비자보호",
@@ -83,11 +83,243 @@
     {
       "id": "KR-11",
       "name_ja": "",
-      "name_ko": "자본시장법",
+      "name_ko": "자본시장과 금융투자업에 관한 법률",
       "country": "KR",
       "category": [
         "인슈어테크",
         "소비자보호"
+      ],
+      "phase": 1
+    },
+    {
+      "id": "JP-03",
+      "name_ja": "保険業法施行令",
+      "name_ko": "보험업법 시행령",
+      "country": "JP",
+      "category": [
+        "보험사",
+        "허가·감독"
+      ],
+      "phase": 1
+    },
+    {
+      "id": "JP-04",
+      "name_ja": "保険業法施行規則",
+      "name_ko": "보험업법 시행규칙",
+      "country": "JP",
+      "category": [
+        "보험사",
+        "허가·감독",
+        "보험대리점"
+      ],
+      "phase": 1
+    },
+    {
+      "id": "JP-06",
+      "name_ja": "金融サービスの提供及び利用環境の整備等に関する法律施行令",
+      "name_ko": "금융서비스제공법 시행령",
+      "country": "JP",
+      "category": [
+        "소비자보호",
+        "인슈어테크"
+      ],
+      "phase": 1
+    },
+    {
+      "id": "JP-08",
+      "name_ja": "金融商品取引法施行令",
+      "name_ko": "금융상품거래법 시행령",
+      "country": "JP",
+      "category": [
+        "인슈어테크",
+        "소비자보호"
+      ],
+      "phase": 1
+    },
+    {
+      "id": "KR-03",
+      "name_ja": "",
+      "name_ko": "보험업법 시행령",
+      "country": "KR",
+      "category": [
+        "보험사",
+        "허가·감독"
+      ],
+      "phase": 1
+    },
+    {
+      "id": "KR-04",
+      "name_ja": "",
+      "name_ko": "보험업법 시행규칙",
+      "country": "KR",
+      "category": [
+        "보험사",
+        "허가·감독"
+      ],
+      "phase": 1
+    },
+    {
+      "id": "KR-08",
+      "name_ja": "",
+      "name_ko": "금융소비자보호에 관한 법률 시행령",
+      "country": "KR",
+      "category": [
+        "소비자보호",
+        "보험대리점"
+      ],
+      "phase": 1
+    },
+    {
+      "id": "KR-12",
+      "name_ja": "",
+      "name_ko": "자본시장과 금융투자업에 관한 법률 시행령",
+      "country": "KR",
+      "category": [
+        "인슈어테크",
+        "소비자보호"
+      ],
+      "phase": 1
+    },
+    {
+      "id": "JP-09",
+      "name_ja": "保険会社向けの総合的な監督指針",
+      "name_ko": "보험회사 감독지침",
+      "country": "JP",
+      "category": [
+        "보험사",
+        "허가·감독"
+      ],
+      "phase": 1
+    },
+    {
+      "id": "JP-10",
+      "name_ja": "少額短期保険業者向けの監督指針",
+      "name_ko": "소액단기보험업자 감독지침",
+      "country": "JP",
+      "category": [
+        "보험사",
+        "허가·감독"
+      ],
+      "phase": 1
+    },
+    {
+      "id": "JP-11",
+      "name_ja": "認可特定保険業者向けの総合的な監督指針",
+      "name_ko": "인가특정보험업자 감독지침",
+      "country": "JP",
+      "category": [
+        "보험사",
+        "허가·감독"
+      ],
+      "phase": 1
+    },
+    {
+      "id": "JP-12",
+      "name_ja": "金融商品取引業者等向けの総合的な監督指針",
+      "name_ko": "금융상품거래업자 감독지침",
+      "country": "JP",
+      "category": [
+        "인슈어테크",
+        "소비자보호"
+      ],
+      "phase": 1
+    },
+    {
+      "id": "JP-13",
+      "name_ja": "金融サービス仲介業者向けの総合的な監督指針",
+      "name_ko": "금융서비스중개업자 감독지침",
+      "country": "JP",
+      "category": [
+        "보험대리점",
+        "소비자보호"
+      ],
+      "phase": 1
+    },
+    {
+      "id": "JP-14",
+      "name_ja": "事務ガイドライン第三分冊：金融会社関係",
+      "name_ko": "사무가이드라인 제3분책",
+      "country": "JP",
+      "category": [
+        "보험사",
+        "허가·감독"
+      ],
+      "phase": 1
+    },
+    {
+      "id": "JP-15",
+      "name_ja": "告示・ガイドライン・Q&A・法令解釈事例集 (保険関連)",
+      "name_ko": "고시·가이드라인·Q&A (보험)",
+      "country": "JP",
+      "category": [
+        "보험사",
+        "소비자보호"
+      ],
+      "phase": 1
+    },
+    {
+      "id": "KR-05",
+      "name_ja": "",
+      "name_ko": "보험업감독규정",
+      "country": "KR",
+      "category": [
+        "보험사",
+        "허가·감독"
+      ],
+      "phase": 1
+    },
+    {
+      "id": "KR-06",
+      "name_ja": "",
+      "name_ko": "보험업감독업무시행세칙",
+      "country": "KR",
+      "category": [
+        "보험사",
+        "허가·감독"
+      ],
+      "phase": 1
+    },
+    {
+      "id": "KR-09",
+      "name_ja": "",
+      "name_ko": "금융소비자보호에관한감독규정",
+      "country": "KR",
+      "category": [
+        "소비자보호",
+        "보험대리점"
+      ],
+      "phase": 1
+    },
+    {
+      "id": "KR-10",
+      "name_ja": "",
+      "name_ko": "금융소비자보호에관한감독규정시행세칙",
+      "country": "KR",
+      "category": [
+        "소비자보호",
+        "보험대리점"
+      ],
+      "phase": 1
+    },
+    {
+      "id": "KR-13",
+      "name_ja": "",
+      "name_ko": "금융투자업규정",
+      "country": "KR",
+      "category": [
+        "인슈어테크",
+        "소비자보호"
+      ],
+      "phase": 1
+    },
+    {
+      "id": "KR-26",
+      "name_ja": "",
+      "name_ko": "금융기관검사및제재에관한규정",
+      "country": "KR",
+      "category": [
+        "보험사",
+        "허가·감독"
       ],
       "phase": 1
     }
