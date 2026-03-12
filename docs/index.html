@@ -207,9 +207,9 @@ async function sendMessage() {
   addMsg("user", query);
   input.value = "";
   document.getElementById("send-btn").disabled = true;
-
   const loadingId = addLoading();
-    history.push({ role: "user", content: query });
+
+  history.push({ role: "user", content: query });
 
   try {
     const r = await fetch(VERCEL_URL, {
@@ -221,7 +221,6 @@ async function sendMessage() {
     const text = data.text || "오류가 발생했습니다.";
     removeLoading(loadingId);
     history.push({ role: "assistant", content: text });
-    // 히스토리 5턴으로 제한
     if (history.length > 10) history = history.slice(-10);
     addBotMsg(text, "");
   } catch (e) {
