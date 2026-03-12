@@ -223,7 +223,7 @@ async function sendMessage() {
     history.push({ role: "assistant", content: text });
     // 히스토리 5턴으로 제한
     if (history.length > 10) history = history.slice(-10);
-    addBotMsg(text, chunks);
+    addBotMsg(text, "");
   } catch (e) {
     removeLoading(loadingId);
     addMsg("bot", `오류: ${e.message}`);
