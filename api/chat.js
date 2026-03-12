@@ -52,7 +52,7 @@ module.exports = async function handler(req, res) {
       }
     }
 
-    const geminiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_KEY}`;
+    const geminiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=${GEMINI_KEY}`;
     const body = {
       system_instruction: { parts: [{ text: system }] },
       contents: lastMessages.map(m => ({
@@ -71,12 +71,13 @@ module.exports = async function handler(req, res) {
       body: JSON.stringify(body),
     });
 
+    const data = await gRes.json();
     if (!gRes.ok) {
-      const err = await gRes.text();
-      return res.status(gRes.status).json({ error: err });
+      console.error("Gemini 오류:", JSON.stringify(data));
+      // Gemini 에러도 200으로 반환 (클라이언트가 받을 수 있도록)
+      return res.status(200).json({ text: `Gemini 오류 (${gRes.status}): ${data?.error?.message || JSON.stringify(data)}` });
     }
 
-    const data = await gRes.json();
     const text = data.candidates?.[0]?.content?.parts?.[0]?.text || "";
     return res.status(200).json({ text, hasContext: !!contextChunks });
 
