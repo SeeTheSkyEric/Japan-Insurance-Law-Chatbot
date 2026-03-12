@@ -2,75 +2,99 @@ name: Monthly Law Pipeline
 
 on:
   schedule:
-    - cron: '0 1 1 * *'   # 매월 1일 오전 1시 (UTC)
-  workflow_dispatch:        # 수동 실행 (GitHub UI에서 버튼 클릭)
+    - cron: '0 1 1 * *'   # 매월 1일 01:00 UTC
+  workflow_dispatch:
     inputs:
       country:
-        description: '수집 대상 (JP / KR / ALL)'
+        description: '수집 대상'
         required: true
         default: 'ALL'
         type: choice
         options: [ALL, JP, KR]
+      phase:
+        description: '단계 (0=전체, 1=핵심법령, 2=특별법·연금, 3=세법)'
+        required: true
+        default: '1'
+        type: choice
+        options: ['0', '1', '2', '3']
+      run_crawler:
+        description: 'FSA + 행정규칙 크롤러 실행'
+        required: false
+        default: 'true'
+        type: boolean
 
 jobs:
   update-laws:
     runs-on: ubuntu-latest
-    timeout-minutes: 60
+    timeout-minutes: 120
 
     steps:
-      # ── 1. 체크아웃 ────────────────────────────────────────────────────────
       - name: Checkout
         uses: actions/checkout@v4
 
-      # ── 2. Python 환경 ─────────────────────────────────────────────────────
-      - name: Setup Python
+      - name: Setup Python 3.11
         uses: actions/setup-python@v5
         with:
           python-version: '3.11'
           cache: 'pip'
 
       - name: Install dependencies
-        run: pip install requests supabase google-generativeai
+        run: |
+          pip install requests supabase google-generativeai beautifulsoup4
 
-      # ── 3. 파이프라인 실행 ─────────────────────────────────────────────────
-      - name: Run law pipeline
+      # ── 1. 법령 파이프라인 (e-Gov + 법제처 API) ────────────────────────────
+      - name: Run pipeline.py
         env:
           SUPABASE_URL:         ${{ secrets.SUPABASE_URL }}
           SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
           GEMINI_API_KEY:       ${{ secrets.GEMINI_API_KEY }}
           HOUREI_API_KEY:       ${{ secrets.HOUREI_API_KEY }}
         run: |
-          COUNTRY=${{ github.event.inputs.country || 'ALL' }}
-          python scripts/pipeline.py --country $COUNTRY
+          python scripts/pipeline.py \
+            --country "${{ github.event.inputs.country || 'ALL' }}" \
+            --phase   "${{ github.event.inputs.phase   || '1'   }}"
 
-      # ── 4. laws_index.json → GitHub Pages 커밋 ────────────────────────────
-      - name: Commit updated laws_index.json
+      # ── 2. 크롤러 (FSA 감독지침 + 법제처 행정규칙) ────────────────────────
+      - name: Run crawler.py
+        if: ${{ github.event.inputs.run_crawler != 'false' }}
+        env:
+          SUPABASE_URL:         ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+          GEMINI_API_KEY:       ${{ secrets.GEMINI_API_KEY }}
+          HOUREI_API_KEY:       ${{ secrets.HOUREI_API_KEY }}
+        run: |
+          python scripts/crawler.py \
+            --target "${{ github.event.inputs.country || 'ALL' }}"
+
+      # ── 3. laws_index.json → GitHub Pages 커밋 ────────────────────────────
+      - name: Commit laws_index.json
         run: |
           git config user.name  "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add docs/data/laws_index.json
-          git diff --cached --quiet || git commit -m "chore: monthly law update $(date +'%Y-%m-%d')"
+          git diff --cached --quiet || \
+            git commit -m "chore: law update $(date +'%Y-%m-%d') [phase=${{ github.event.inputs.phase || '1' }}]"
           git push
 
-      # ── 5. Slack 알림 ──────────────────────────────────────────────────────
-      - name: Notify Slack (success)
+      # ── 4. Slack 알림 ──────────────────────────────────────────────────────
+      - name: Slack (success)
         if: success()
         uses: slackapi/slack-github-action@v1
         with:
           payload: |
             {
-              "text": "✅ *법령 업데이트 완료* (`${{ github.event.inputs.country || 'ALL' }}`)\n날짜: $(date +'%Y-%m-%d')\n<${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|Actions 로그 보기>"
+              "text": "✅ *법령 업데이트 완료*\n대상: `${{ github.event.inputs.country || 'ALL' }}` phase=`${{ github.event.inputs.phase || '1' }}`\n<${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|로그 보기>"
             }
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
 
-      - name: Notify Slack (failure)
+      - name: Slack (failure)
         if: failure()
         uses: slackapi/slack-github-action@v1
         with:
           payload: |
             {
-              "text": "❌ *법령 업데이트 실패* (`${{ github.event.inputs.country || 'ALL' }}`)\n<${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|Actions 로그 확인>"
+              "text": "❌ *법령 업데이트 실패*\n대상: `${{ github.event.inputs.country || 'ALL' }}` phase=`${{ github.event.inputs.phase || '1' }}`\n<${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|로그 확인>"
             }
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
