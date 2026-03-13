@@ -810,6 +810,31 @@ let panelChunks = [];
 let panelLawId = '';
 let panelChunkIdx = 0;
 
+// 노이즈 텍스트 필터 (crawler 수집 시 포함된 불필요 내용)
+const NOISE_PATTERNS = [
+  /Note:\s*This page is machine translated/i,
+  /Translated pages are not necessarily correct/i,
+  /^\s*Tweet\s*$/i,
+];
+function isNoise(text) {
+  if (!text || !text.trim()) return true;
+  return NOISE_PATTERNS.some(p => p.test(text.trim()));
+}
+
+// article 문자열에서 첫 번째 숫자 추출 (정렬용)
+function articleSortKey(article) {
+  if (!article) return Infinity;
+  const m = article.match(/\d+/);
+  return m ? parseInt(m[0], 10) : Infinity;
+}
+
+// article → "제N조" 형식 버튼 라벨
+function formatArticleLabel(article) {
+  if (!article) return '–';
+  const m = article.match(/\d+/);
+  return m ? `제${m[0]}조` : article;
+}
+
 async function openPanel(lawId) {
   const law = allLaws.find(l => l.id === lawId);
   if (!law) return;
@@ -824,21 +849,29 @@ async function openPanel(lawId) {
   document.getElementById('panel-overlay').classList.add('open');
 
   try {
-    const url = `${SUPABASE_URL}/rest/v1/chunks?law_id=eq.${lawId}&select=id,article,title,text&order=article&limit=30`;
+    const url = `${SUPABASE_URL}/rest/v1/chunks?law_id=eq.${lawId}&select=id,article,title,text&limit=100`;
     const r = await fetch(url, {
       headers: { apikey: SUPABASE_KEY, Authorization: `Bearer ${SUPABASE_KEY}` }
     });
-    panelChunks = await r.json();
-    if (!Array.isArray(panelChunks) || !panelChunks.length) {
-      document.getElementById('panel-original').textContent = '조문 데이터가 없습니다.';
+    let chunks = await r.json();
+    if (!Array.isArray(chunks)) chunks = [];
+
+    // 노이즈 필터링 후 숫자 순 정렬
+    chunks = chunks.filter(c => !isNoise(c.text));
+    chunks.sort((a, b) => articleSortKey(a.article) - articleSortKey(b.article));
+    panelChunks = chunks;
+
+    if (!panelChunks.length) {
+      document.getElementById('panel-original').textContent =
+        '수집된 조문 데이터가 없습니다.\n(감독지침 등 일부 법령은 별도 수집이 필요합니다.)';
       return;
     }
-    // 청크 네비게이션 버튼 생성
+
+    // 조문 네비게이션: "제N조" 형식
     const nav = document.getElementById('chunk-nav');
-    nav.innerHTML = panelChunks.map((c, i) => `
-      <button class="chunk-btn ${i===0?'active':''}" onclick="selectChunk(${i})">
-        ${c.article || `#${i+1}`}
-      </button>`).join('');
+    nav.innerHTML = panelChunks.map((c, i) =>
+      `<button class="chunk-btn ${i===0?'active':''}" onclick="selectChunk(${i})">${formatArticleLabel(c.article)}</button>`
+    ).join('');
     showChunk(0);
   } catch (e) {
     document.getElementById('panel-original').textContent = `오류: ${e.message}`;
@@ -854,13 +887,20 @@ function selectChunk(idx) {
 function showChunk(idx) {
   const chunk = panelChunks[idx];
   if (!chunk) return;
-  // 원문 표시 (일본법은 일본어 그대로, 한국법은 한국어)
-  const origText = chunk.title
-    ? `【${chunk.article || ''}】 ${chunk.title}\n\n${chunk.text || ''}`
+
+  // "제N조 : 제목" 형식 헤더
+  const articleNum = (() => { const m = (chunk.article||'').match(/\d+/); return m ? m[0] : ''; })();
+  let header = '';
+  if (articleNum && chunk.title) header = `제${articleNum}조 : ${chunk.title}`;
+  else if (articleNum)           header = `제${articleNum}조`;
+  else if (chunk.title)          header = chunk.title;
+
+  const origText = header
+    ? `${header}\n\n${chunk.text || ''}`
     : (chunk.text || '');
   document.getElementById('panel-original').textContent = origText;
 
-  // 한국법이면 번역 패널 숨기기, 일본법이면 번역 요청
+  // 일본법이면 번역, 한국법이면 번역 패널 숨김
   const isJP = panelLawId.startsWith('JP');
   if (isJP) {
     fetchTranslation(chunk);
