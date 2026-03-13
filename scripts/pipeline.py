@@ -376,10 +376,47 @@ def run(country: str, phase: int = 0):
 
     log.info("=== 완료 ===")
 
+def embed_only(country: str, batch: int = 100):
+    """임베딩이 없는 기존 청크에만 임베딩을 채운다 (법령 재수집 없이)."""
+    log.info(f"=== embed-only 모드: country={country}, batch={batch} ===")
+    offset = 0
+    total_updated = 0
+    while True:
+        q = supabase.table("chunks") \
+            .select("id,law_id,title,text") \
+            .is_("embedding", "null") \
+            .limit(batch) \
+            .offset(offset)
+        if country != "ALL":
+            q = q.like("law_id", f"{country}%")
+        rows = q.execute().data
+        if not rows:
+            break
+        log.info(f"  임베딩 대상: {len(rows)}개 (offset={offset})")
+        for row in rows:
+            try:
+                emb = embed_single(f"{row.get('title','')} {row['text']}")
+                supabase.table("chunks").update({"embedding": emb}).eq("id", row["id"]).execute()
+                total_updated += 1
+            except Exception as e:
+                log.warning(f"  임베딩 실패 ({row['id']}): {e}")
+            time.sleep(0.5)
+        offset += batch
+    log.info(f"=== embed-only 완료: {total_updated}개 업데이트 ===")
+
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--country", choices=["JP","KR","ALL"], default="ALL")
     parser.add_argument("--phase", type=int, choices=[0,1,2,3], default=0,
                         help="0=전체, 1=핵심법령, 2=특별법·연금, 3=세법")
+    parser.add_argument("--embed-only", action="store_true",
+                        help="법령 재수집 없이 임베딩 없는 청크에만 임베딩 채우기")
+    parser.add_argument("--batch", type=int, default=100,
+                        help="embed-only 배치 크기 (기본 100)")
     args = parser.parse_args()
-    run(args.country, args.phase)
+
+    if args.embed_only:
+        embed_only(args.country, args.batch)
+    else:
+        run(args.country, args.phase)
