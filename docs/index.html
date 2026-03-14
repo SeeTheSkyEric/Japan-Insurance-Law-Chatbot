@@ -561,7 +561,10 @@
       <div class="sub">Habitfactory × Signal Financial Lab</div>
     </div>
   </div>
-  <div class="flag-pair">🇯🇵 🇰🇷</div>
+  <div style="display:flex;align-items:center;gap:16px;">
+    <div style="font-size:11px;color:rgba(255,255,255,0.4);letter-spacing:0.3px;">51개 법령 · RAG 검색</div>
+    <div class="flag-pair">🇯🇵 🇰🇷</div>
+  </div>
 </header>
 
 <div class="tabbar">
@@ -579,20 +582,30 @@
       <em>AI로 즉시 비교</em>
     </div>
     <div class="landing-desc">
-      보험사, 보험대리점, 컴플라이언스 담당자를 위한<br>
-      한일 보험 규제 전문 AI 어시스턴트
+      보험사·대리점·컴플라이언스·법무팀을 위한<br>
+      <strong style="color:rgba(255,255,255,0.85);">일본 진출 · 규제 비교 · 법령 검색</strong> 전문 AI
     </div>
     <div class="landing-cards">
       <div class="landing-card" onclick="showPage('chat')">
         <div class="card-icon">💬</div>
         <div class="card-title">AI 챗봇</div>
-        <div class="card-desc">한일 보험 규제를 자유롭게 질문하고 즉시 비교 분석 결과를 받아보세요.</div>
+        <div class="card-desc">보험 규제를 자유롭게 질문하면 일본·한국 규제를 즉시 비교 분석해 드려요.</div>
+        <div style="display:flex;gap:6px;margin-top:10px;flex-wrap:wrap;">
+          <span style="font-size:10px;background:rgba(255,255,255,0.1);padding:3px 8px;border-radius:10px;color:rgba(255,255,255,0.6);">🇯🇵 일본 규제</span>
+          <span style="font-size:10px;background:rgba(255,255,255,0.1);padding:3px 8px;border-radius:10px;color:rgba(255,255,255,0.6);">🇰🇷 한국 규제</span>
+          <span style="font-size:10px;background:rgba(255,255,255,0.1);padding:3px 8px;border-radius:10px;color:rgba(255,255,255,0.6);">⚖️ 즉시 비교</span>
+        </div>
         <div class="card-arrow">바로 시작 →</div>
       </div>
       <div class="landing-card" onclick="showPage('laws')">
         <div class="card-icon">📚</div>
         <div class="card-title">법령 조회</div>
-        <div class="card-desc">수집된 51개 법령을 일본·한국 2열로 비교하며 원문·번역을 확인하세요.</div>
+        <div class="card-desc">51개 법령·감독지침을 영역별로 비교하고 원문과 한글 번역을 확인하세요.</div>
+        <div style="display:flex;gap:6px;margin-top:10px;flex-wrap:wrap;">
+          <span style="font-size:10px;background:rgba(255,255,255,0.1);padding:3px 8px;border-radius:10px;color:rgba(255,255,255,0.6);">🇯🇵 26개 법령</span>
+          <span style="font-size:10px;background:rgba(255,255,255,0.1);padding:3px 8px;border-radius:10px;color:rgba(255,255,255,0.6);">🇰🇷 25개 법령</span>
+          <span style="font-size:10px;background:rgba(255,255,255,0.1);padding:3px 8px;border-radius:10px;color:rgba(255,255,255,0.6);">🔍 원문+번역</span>
+        </div>
         <div class="card-arrow">법령 보기 →</div>
       </div>
     </div>
