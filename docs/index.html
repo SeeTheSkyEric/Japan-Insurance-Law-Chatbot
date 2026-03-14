@@ -973,58 +973,44 @@ function isNoise(text) {
   return NOISE_PATTERNS.some(p => p.test(text.trim()));
 }
 
-// 한자 수사 → 정수 변환 (第七十七条 → 77)
-function articleSortKey(article) {
-  if (!article) return Infinity;
-  // 아라비아 숫자가 있으면 바로 사용
-  const arabicMatch = article.match(/\d+/);
-  if (arabicMatch) return parseInt(arabicMatch[0], 10);
-  // 한자 수사 변환
-  const s = article.replace(/[第条項]/g, '');
-  if (!s) return Infinity;
-  const map = {'〇':0,'一':1,'二':2,'三':3,'四':4,'五':5,'六':6,'七':7,'八':8,'九':9};
-  let result = 0, temp = 0, unit = 1;
-  const chars = s.split('');
-  // 右から処理: 百, 千 등 큰 단위 처리
-  if (s.includes('千')) {
-    const parts = s.split('千');
-    const thousands = parts[0] ? (map[parts[0]] || 0) : 1;
-    result += thousands * 1000;
-    // 나머지는 재귀처럼 처리
-    const rest = parts[1] || '';
-    result += kanjiToIntSub(rest);
-    return result;
-  }
-  return kanjiToIntSub(s);
-}
-function kanjiToIntSub(s) {
-  const map = {'〇':0,'一':1,'二':2,'三':3,'四':4,'五':5,'六':6,'七':7,'八':8,'九':9};
+// 한자 수사 헬퍼: 百・十 포함 변환 (第七十七 → 77, 第一条の三 → [1,3])
+function _ki(s) {
+  const M = {'一':1,'二':2,'三':3,'四':4,'五':5,'六':6,'七':7,'八':8,'九':9};
   if (!s) return 0;
-  let result = 0;
-  if (s.includes('百')) {
-    const parts = s.split('百');
-    const h = parts[0] ? (map[parts[0]] !== undefined ? map[parts[0]] : 1) : 1;
-    result += h * 100;
-    s = parts[1] || '';
+  const am = s.match(/\d+/); if (am) return parseInt(am[0]);
+  let r = 0;
+  if (s.includes('百')) { const p=s.split('百'); r+=(M[p[0]]||1)*100; s=p[1]||''; }
+  if (s.includes('十')) { const p=s.split('十'); r+=(M[p[0]]||1)*10; s=p[1]||''; }
+  if (s) r += M[s[0]]||0;
+  return r;
+}
+// articleSortKey: [주번호, 의N번호] 튜플 반환 — の 파생 조문 정확히 정렬
+function articleSortKey(article) {
+  if (!article) return [9999, 0];
+  const s = article.replace(/[第条項]/g, '').trim();
+  if (!s) return [9999, 0];
+  if (s.includes('の')) {
+    const p = s.split('の');
+    return [_ki(p[0]), _ki(p[1]||'')];
   }
-  if (s.includes('十')) {
-    const parts = s.split('十');
-    const t = parts[0] ? (map[parts[0]] !== undefined ? map[parts[0]] : 1) : 1;
-    result += t * 10;
-    s = parts[1] || '';
-  }
-  if (s) result += (map[s[0]] !== undefined ? map[s[0]] : 0);
-  return result;
+  return [_ki(s), 0];
 }
 
-// article → "제N조" 형식 (한자/아라비아 모두 지원)
+
+// article → "제N조" 또는 "제N조의M" 형식
 function formatArticleLabel(article) {
   if (!article) return '–';
-  // 아라비아 숫자가 있으면 바로 사용
+  const s = article.replace(/[第条項]/g, '').trim();
+  if (!s) return article;
+  if (s.includes('の')) {
+    const parts = s.split('の');
+    const main = _kanjiInt(parts[0]);
+    const sub  = _kanjiInt(parts[1] || '');
+    return sub ? `제${main}조의${sub}` : `제${main}조`;
+  }
   const arabicM = article.match(/\d+/);
   if (arabicM) return `제${arabicM[0]}조`;
-  // 한자 수사 변환
-  const num = articleSortKey(article);
+  const num = articleSortKey(article)[0];
   return num < 9999 ? `제${num}조` : article;
 }
 
@@ -1051,7 +1037,10 @@ async function openPanel(lawId) {
 
     // 노이즈 필터링 후 숫자 순 정렬
     chunks = chunks.filter(c => !isNoise(c.text));
-    chunks.sort((a, b) => articleSortKey(a.article) - articleSortKey(b.article));
+    chunks.sort((a, b) => {
+      const ka = articleSortKey(a.article), kb = articleSortKey(b.article);
+      return ka[0] !== kb[0] ? ka[0] - kb[0] : ka[1] - kb[1];
+    });
     panelChunks = chunks;
 
     if (!panelChunks.length) {
@@ -1085,24 +1074,7 @@ async function openPanel(lawId) {
     }
     renderNav(null);
     showChunk(0);
-    // JP법이면 제목 한글 번역 (백그라운드)
-    if (isJP) {
-      const titleList = panelChunks.map((c,i) => `${i+1}. ${c.article||''} ${c.title||''}`.trim()).join('\n');
-      fetch(VERCEL_URL, {
-        method: 'POST',
-        headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify({
-          messages: [{role:'user', content:`다음 일본 법령 조문 번호와 제목 목록을 한국어로 번역하세요. 번호 순서 유지, 한 줄에 하나씩, "번호. 한글제목" 형식으로만 출력하세요.\n\n${titleList}`}],
-          system: '법령 조문 제목을 한국어로 번역하는 전문가입니다. 번역문만 출력하고 부가 설명은 하지 마세요.',
-          query: titleList.slice(0,100)
-        })
-      }).then(r=>r.json()).then(data=>{
-        if (!data.text) return;
-        const lines = data.text.split('\n').filter(l=>l.trim());
-        const koTitles = lines.map(l => l.replace(/^\d+\.\s*/, '').trim());
-        renderNav(koTitles);
-      }).catch(()=>{});
-    }
+    // JP법 조문 제목은 일본어 그대로 표시 (빠른 로딩)
   } catch (e) {
     document.getElementById('panel-original').textContent = `오류: ${e.message}`;
   }
@@ -1138,16 +1110,28 @@ function showChunk(idx) {
   // 일본법이면 번역, 한국법이면 번역 패널 숨김
   const isJP = panelLawId.startsWith('JP');
   if (isJP) {
-    fetchTranslation(chunk);
+    fetchTranslation(chunk, idx);
   } else {
     document.getElementById('panel-kr-section').style.display = 'none';
   }
 }
 
-async function fetchTranslation(chunk) {
+// 번역 결과 캐시 (같은 조 반복 클릭 시 즉시 표시)
+const _transCache = {};
+
+async function fetchTranslation(chunk, chunkIdx) {
   const sec = document.getElementById('panel-kr-section');
   const trans = document.getElementById('panel-translation');
   sec.style.display = 'block';
+
+  const cacheKey = chunk.id || chunk.article;
+
+  // 캐시 확인 → 즉시 표시
+  if (_transCache[cacheKey]) {
+    trans.textContent = _transCache[cacheKey];
+    return;
+  }
+
   trans.textContent = '번역 중...';
 
   try {
@@ -1164,7 +1148,33 @@ async function fetchTranslation(chunk) {
       }),
     });
     const data = await r.json();
-    trans.textContent = data.text || '번역 실패';
+    const translated = data.text || '번역 실패';
+    trans.textContent = translated;
+
+    // 캐시 저장
+    _transCache[cacheKey] = translated;
+
+    // 번역 완료 후 조문 목록 해당 항목에 한글 제목 업데이트
+    if (chunk.title && translated) {
+      // 번역문 첫 줄에서 조 제목 추출 (조문: 第X条 제목 형식이 앞에 있을 수 있음)
+      const firstLine = translated.split('\n')[0].trim();
+      // "제N조 : 제목" 또는 "제N조의M (제목)" 패턴에서 제목 추출
+      const titleMatch = firstLine.match(/제\d+조(?:의\d+)?\s*[:\(]\s*(.+)/);
+      const koTitle = titleMatch ? titleMatch[1].replace(/[\)）].*/, '').trim() : '';
+      if (koTitle && chunkIdx !== undefined) {
+        const items = document.querySelectorAll('.article-item');
+        if (items[chunkIdx]) {
+          let koEl = items[chunkIdx].querySelector('.article-item-title-ko');
+          if (!koEl) {
+            koEl = document.createElement('div');
+            koEl.className = 'article-item-title-ko';
+            const textEl = items[chunkIdx].querySelector('.article-item-text');
+            if (textEl) textEl.appendChild(koEl);
+          }
+          if (!koEl.textContent) koEl.textContent = koTitle;
+        }
+      }
+    }
   } catch (e) {
     trans.textContent = `번역 오류: ${e.message}`;
   }
