@@ -56,6 +56,7 @@ module.exports = async function handler(req, res) {
   try {
     // ── ① 벡터 검색으로 관련 조문 가져오기 ────────────────────────────────
     let contextChunks = "";
+    let ragError = null;
     if (query && SUPABASE_URL && SUPABASE_KEY && GEMINI_KEY) {
       try {
         const embedding = await embedQuery(query);
@@ -68,6 +69,7 @@ module.exports = async function handler(req, res) {
         }
       } catch (e) {
         console.error("RAG 검색 실패, 키워드 폴백:", e.message);
+        ragError = e.message;
 
         // ── 폴백: 임베딩 실패 시 기존 키워드 검색으로 대체 ──────────────
         try {
@@ -126,7 +128,7 @@ module.exports = async function handler(req, res) {
     }
 
     const text = data.content?.[0]?.text || "응답을 받지 못했습니다.";
-    return res.status(200).json({ text, hasContext: !!contextChunks });
+    return res.status(200).json({ text, hasContext: !!contextChunks, ragError: ragError || undefined });
 
   } catch (e) {
     console.error("서버 오류:", e.message);
