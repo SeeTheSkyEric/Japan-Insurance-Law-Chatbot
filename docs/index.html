@@ -1004,8 +1004,8 @@ function formatArticleLabel(article) {
   if (!s) return article;
   if (s.includes('の')) {
     const parts = s.split('の');
-    const main = _kanjiInt(parts[0]);
-    const sub  = _kanjiInt(parts[1] || '');
+    const main = _ki(parts[0]);
+    const sub  = _ki(parts[1] || '');
     return sub ? `제${main}조의${sub}` : `제${main}조`;
   }
   const arabicM = article.match(/\d+/);
