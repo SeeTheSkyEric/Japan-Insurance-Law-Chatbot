@@ -1035,8 +1035,25 @@ async function openPanel(lawId) {
     let chunks = await r.json();
     if (!Array.isArray(chunks)) chunks = [];
 
-    // 노이즈 필터링 후 숫자 순 정렬
+    // 노이즈 필터링
     chunks = chunks.filter(c => !isNoise(c.text));
+
+    // split_chunks로 분할된 동일 article (-p1, -p2) 병합
+    const mergedMap = new Map();
+    chunks.forEach(c => {
+      const key = c.article || c.id;
+      if (mergedMap.has(key)) {
+        const ex = mergedMap.get(key);
+        if (!ex.text.includes(c.text.slice(0, 30))) {
+          ex.text = ex.text + '\n' + c.text;
+        }
+      } else {
+        mergedMap.set(key, Object.assign({}, c));
+      }
+    });
+    chunks = Array.from(mergedMap.values());
+
+    // 조번호 숫자 정렬
     chunks.sort((a, b) => {
       const ka = articleSortKey(a.article), kb = articleSortKey(b.article);
       return ka[0] !== kb[0] ? ka[0] - kb[0] : ka[1] - kb[1];
