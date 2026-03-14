@@ -282,13 +282,12 @@ def split_chunks(articles: list[dict]) -> list[dict]:
     return chunks
 
 EMBED_MODEL      = "text-embedding-004"
-GEMINI_EMBED_URL = "https://generativelanguage.googleapis.com/v1beta/models/{model}:embedContent?key={key}"
+GEMINI_EMBED_URL = "https://generativelanguage.googleapis.com/v1/models/{model}:embedContent?key={key}"
 
 def embed_single(text: str) -> list[float]:
     url  = GEMINI_EMBED_URL.format(model=EMBED_MODEL, key=GEMINI_API_KEY)
     body = {"model": f"models/{EMBED_MODEL}",
-            "content": {"parts": [{"text": text}]},
-            "taskType": "RETRIEVAL_DOCUMENT"}
+            "content": {"parts": [{"text": text}]}}
     r = requests.post(url, json=body, timeout=30)
     r.raise_for_status()
     return r.json()["embedding"]["values"]
