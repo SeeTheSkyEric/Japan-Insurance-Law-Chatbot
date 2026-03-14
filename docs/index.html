@@ -381,7 +381,7 @@
     }
     .panel-overlay.open { display: flex; justify-content: flex-end; }
     .side-panel {
-      width: 480px;
+      width: 700px;
       max-width: 95vw;
       height: 100%;
       background: var(--surface);
@@ -461,30 +461,33 @@
     }
     .article-item {
       display: flex;
-      align-items: flex-start;
-      gap: 10px;
-      padding: 10px 14px;
+      align-items: center;
+      gap: 8px;
+      padding: 9px 12px;
       cursor: pointer;
       border-bottom: 1px solid #f0f0f0;
       transition: background 0.12s;
       border-radius: 0;
+      min-width: 0;
     }
     .article-item:first-child { border-top: 1px solid var(--border); }
     .article-item:last-child { border-bottom: none; }
     .article-item:hover { background: var(--jp-light); }
     .article-item.active { background: var(--jp-light); border-left: 3px solid var(--jp); }
     .article-item-num {
-      font-size: 12px;
+      font-size: 11px;
       font-weight: 700;
       color: var(--jp);
-      min-width: 52px;
+      min-width: 46px;
       flex-shrink: 0;
-      padding-top: 1px;
     }
     .article-item-title {
-      font-size: 13px;
+      font-size: 12px;
       color: var(--text);
       line-height: 1.5;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
     /* 한국법 리스트 색상 */
     .kr-panel .article-item:hover { background: var(--kr-light); }
@@ -631,7 +634,7 @@
     </div>
     <div class="panel-body" style="display:flex;flex-direction:row;padding:0;gap:0;overflow:hidden;">
       <!-- 조문 목록 (좌) -->
-      <div id="article-list-wrap" style="width:160px;min-width:160px;border-right:1px solid var(--border);overflow-y:auto;flex-shrink:0;">
+      <div id="article-list-wrap" style="width:210px;min-width:210px;border-right:1px solid var(--border);overflow-y:auto;flex-shrink:0;">
         <div class="article-list" id="chunk-nav"></div>
       </div>
       <!-- 조문 내용 (우) -->
@@ -641,7 +644,7 @@
           <div class="panel-original" id="panel-original">로딩 중...</div>
         </div>
         <div class="panel-section" id="panel-kr-section" style="display:none">
-          <div class="panel-section-label">🇰🇷 한글 번역</div>
+          <div class="panel-section-label">🇰🇷 한글 번역 (자동)</div>
           <div class="panel-translation" id="panel-translation"></div>
         </div>
       </div>
@@ -941,10 +944,11 @@ async function openPanel(lawId) {
     if (isKR) nav.closest('.article-list')?.parentElement?.classList.add('kr-panel');
     nav.innerHTML = panelChunks.map((c, i) => {
       const num = (() => { const m = (c.article||'').match(/\d+/); return m ? `제${m[0]}조` : (c.article||`#${i+1}`); })();
-      const title = c.title || '';
-      return `<div class="article-item ${i===0?'active':''}" onclick="selectChunk(${i})">
+      const title = (c.title || '').replace(/"/g, '&quot;');
+      const titleDisplay = (c.title || '').replace(/</g,'&lt;');
+      return `<div class="article-item ${i===0?'active':''}" onclick="selectChunk(${i})" title="${title}">
         <div class="article-item-num">${num}</div>
-        <div class="article-item-title">${title}</div>
+        <div class="article-item-title">${titleDisplay}</div>
       </div>`;
     }).join('');
     showChunk(0);
