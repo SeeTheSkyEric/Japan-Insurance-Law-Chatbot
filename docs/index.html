@@ -973,18 +973,59 @@ function isNoise(text) {
   return NOISE_PATTERNS.some(p => p.test(text.trim()));
 }
 
-// article 문자열에서 첫 번째 숫자 추출 (정렬용)
+// 한자 수사 → 정수 변환 (第七十七条 → 77)
 function articleSortKey(article) {
   if (!article) return Infinity;
-  const m = article.match(/\d+/);
-  return m ? parseInt(m[0], 10) : Infinity;
+  // 아라비아 숫자가 있으면 바로 사용
+  const arabicMatch = article.match(/\d+/);
+  if (arabicMatch) return parseInt(arabicMatch[0], 10);
+  // 한자 수사 변환
+  const s = article.replace(/[第条項]/g, '');
+  if (!s) return Infinity;
+  const map = {'〇':0,'一':1,'二':2,'三':3,'四':4,'五':5,'六':6,'七':7,'八':8,'九':9};
+  let result = 0, temp = 0, unit = 1;
+  const chars = s.split('');
+  // 右から処理: 百, 千 등 큰 단위 처리
+  if (s.includes('千')) {
+    const parts = s.split('千');
+    const thousands = parts[0] ? (map[parts[0]] || 0) : 1;
+    result += thousands * 1000;
+    // 나머지는 재귀처럼 처리
+    const rest = parts[1] || '';
+    result += kanjiToIntSub(rest);
+    return result;
+  }
+  return kanjiToIntSub(s);
+}
+function kanjiToIntSub(s) {
+  const map = {'〇':0,'一':1,'二':2,'三':3,'四':4,'五':5,'六':6,'七':7,'八':8,'九':9};
+  if (!s) return 0;
+  let result = 0;
+  if (s.includes('百')) {
+    const parts = s.split('百');
+    const h = parts[0] ? (map[parts[0]] !== undefined ? map[parts[0]] : 1) : 1;
+    result += h * 100;
+    s = parts[1] || '';
+  }
+  if (s.includes('十')) {
+    const parts = s.split('十');
+    const t = parts[0] ? (map[parts[0]] !== undefined ? map[parts[0]] : 1) : 1;
+    result += t * 10;
+    s = parts[1] || '';
+  }
+  if (s) result += (map[s[0]] !== undefined ? map[s[0]] : 0);
+  return result;
 }
 
-// article → "제N조" 형식 버튼 라벨
+// article → "제N조" 형식 (한자/아라비아 모두 지원)
 function formatArticleLabel(article) {
   if (!article) return '–';
-  const m = article.match(/\d+/);
-  return m ? `제${m[0]}조` : article;
+  // 아라비아 숫자가 있으면 바로 사용
+  const arabicM = article.match(/\d+/);
+  if (arabicM) return `제${arabicM[0]}조`;
+  // 한자 수사 변환
+  const num = articleSortKey(article);
+  return num < 9999 ? `제${num}조` : article;
 }
 
 async function openPanel(lawId) {
@@ -1077,8 +1118,13 @@ function showChunk(idx) {
   const chunk = panelChunks[idx];
   if (!chunk) return;
 
-  // "제N조 : 제목" 형식 헤더
-  const articleNum = (() => { const m = (chunk.article||'').match(/\d+/); return m ? m[0] : ''; })();
+  // "제N조 : 제목" 형식 헤더 (한자 수사 변환)
+  const articleNum = (() => {
+    const m = (chunk.article||'').match(/\d+/);
+    if (m) return m[0];
+    const n = articleSortKey(chunk.article||'');
+    return n < 9999 ? String(n) : '';
+  })();
   let header = '';
   if (articleNum && chunk.title) header = `제${articleNum}조 : ${chunk.title}`;
   else if (articleNum)           header = `제${articleNum}조`;
