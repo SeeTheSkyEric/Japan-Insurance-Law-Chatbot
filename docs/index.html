@@ -1057,7 +1057,7 @@ async function openPanel(lawId) {
     // 초기 렌더 (일본어 제목 그대로)
     function renderNav(titles) {
       nav.innerHTML = panelChunks.map((c, i) => {
-        const num = (() => { const m = (c.article||'').match(/\d+/); return m ? `제${m[0]}조` : (c.article||`#${i+1}`); })();
+        const num = formatArticleLabel(c.article) || `#${i+1}`;
         const titleJa = (c.title || '');
         const titleKo = (titles && titles[i] && titles[i] !== titleJa) ? titles[i] : '';
         const titleJaDisplay = titleJa.replace(/</g,'&lt;');
@@ -1074,7 +1074,36 @@ async function openPanel(lawId) {
     }
     renderNav(null);
     showChunk(0);
-    // JP법 조문 제목은 일본어 그대로 표시 (빠른 로딩)
+    // JP법이면 제목 목록만 한꺼번에 번역 (내용은 클릭 시 별도 번역)
+    if (panelLawId.startsWith('JP') && panelChunks.length > 0) {
+      const hasTitles = panelChunks.some(c => c.title);
+      if (hasTitles) {
+        // "1. 第一条 (施行期日)" 형식으로 목록 구성
+        const titleList = panelChunks
+          .map((c, i) => `${i+1}. ${formatArticleLabel(c.article)} ${c.title||''}`.trim())
+          .join('\n');
+        fetch(VERCEL_URL, {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({
+            messages: [{role:'user', content:
+              `다음 일본 법령 조문 번호와 제목 목록을 한국어로 번역하세요.\n번호 순서 유지, 반드시 "번호. 한글제목" 형식으로만 출력하세요. 부가 설명 없이 번역문만 출력하세요.\n\n${titleList}`
+            }],
+            system: '일본 법령 조문 제목을 한국어로 번역하는 전문가입니다. 반드시 "번호. 한글제목" 형식으로만 출력하고 다른 내용은 절대 출력하지 마세요.',
+            query: titleList.slice(0, 100)
+          })
+        })
+        .then(r => r.json())
+        .then(data => {
+          if (!data.text) return;
+          const lines = data.text.split('\n').filter(l => l.trim());
+          // "1. 제목" → ["제목", "제목", ...]
+          const koTitles = lines.map(l => l.replace(/^\d+\.?\s*/, '').trim());
+          renderNav(koTitles);
+        })
+        .catch(() => {});
+      }
+    }
   } catch (e) {
     document.getElementById('panel-original').textContent = `오류: ${e.message}`;
   }
@@ -1110,7 +1139,7 @@ function showChunk(idx) {
   // 일본법이면 번역, 한국법이면 번역 패널 숨김
   const isJP = panelLawId.startsWith('JP');
   if (isJP) {
-    fetchTranslation(chunk, idx);
+    fetchTranslation(chunk);
   } else {
     document.getElementById('panel-kr-section').style.display = 'none';
   }
@@ -1119,7 +1148,7 @@ function showChunk(idx) {
 // 번역 결과 캐시 (같은 조 반복 클릭 시 즉시 표시)
 const _transCache = {};
 
-async function fetchTranslation(chunk, chunkIdx) {
+async function fetchTranslation(chunk) {
   const sec = document.getElementById('panel-kr-section');
   const trans = document.getElementById('panel-translation');
   sec.style.display = 'block';
@@ -1154,27 +1183,7 @@ async function fetchTranslation(chunk, chunkIdx) {
     // 캐시 저장
     _transCache[cacheKey] = translated;
 
-    // 번역 완료 후 조문 목록 해당 항목에 한글 제목 업데이트
-    if (chunk.title && translated) {
-      // 번역문 첫 줄에서 조 제목 추출 (조문: 第X条 제목 형식이 앞에 있을 수 있음)
-      const firstLine = translated.split('\n')[0].trim();
-      // "제N조 : 제목" 또는 "제N조의M (제목)" 패턴에서 제목 추출
-      const titleMatch = firstLine.match(/제\d+조(?:의\d+)?\s*[:\(]\s*(.+)/);
-      const koTitle = titleMatch ? titleMatch[1].replace(/[\)）].*/, '').trim() : '';
-      if (koTitle && chunkIdx !== undefined) {
-        const items = document.querySelectorAll('.article-item');
-        if (items[chunkIdx]) {
-          let koEl = items[chunkIdx].querySelector('.article-item-title-ko');
-          if (!koEl) {
-            koEl = document.createElement('div');
-            koEl.className = 'article-item-title-ko';
-            const textEl = items[chunkIdx].querySelector('.article-item-text');
-            if (textEl) textEl.appendChild(koEl);
-          }
-          if (!koEl.textContent) koEl.textContent = koTitle;
-        }
-      }
-    }
+
   } catch (e) {
     trans.textContent = `번역 오류: ${e.message}`;
   }
