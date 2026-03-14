@@ -50,7 +50,7 @@
     }
     header .brand { display: flex; align-items: center; gap: 10px; }
     header .logo { font-family: 'Noto Serif KR', serif; font-size: 17px; font-weight: 700; letter-spacing: -0.3px; }
-    header .sub { font-size: 11px; color: rgba(255,255,255,0.5); letter-spacing: 0.5px; text-transform: uppercase; }
+    header .sub { font-size: 12px; color: rgba(255,255,255,0.5); letter-spacing: 0.5px; text-transform: uppercase; }
     header .flag-pair { font-size: 20px; letter-spacing: 2px; }
 
     /* ── 탭바 ── */
@@ -113,7 +113,7 @@
       background: rgba(201,168,76,0.15);
       border: 1px solid rgba(201,168,76,0.4);
       color: var(--gold);
-      font-size: 11px;
+      font-size: 12px;
       font-weight: 600;
       letter-spacing: 1.5px;
       text-transform: uppercase;
@@ -165,7 +165,7 @@
     .landing-card .card-desc { font-size: 12px; color: rgba(255,255,255,0.5); line-height: 1.6; }
     .landing-card .card-arrow {
       margin-top: 14px;
-      font-size: 11px;
+      font-size: 12px;
       color: var(--gold);
       font-weight: 600;
       letter-spacing: 0.5px;
@@ -330,7 +330,7 @@
     .country-col-header .count-badge {
       margin-left: auto;
       background: rgba(255,255,255,0.25);
-      font-size: 11px;
+      font-size: 12px;
       font-weight: 600;
       padding: 2px 8px;
       border-radius: 10px;
@@ -340,7 +340,7 @@
     }
     .law-section:last-child { border-bottom: none; }
     .law-section-title {
-      font-size: 11px;
+      font-size: 12px;
       font-weight: 700;
       text-transform: uppercase;
       letter-spacing: 0.8px;
@@ -375,7 +375,7 @@
     .col-kr .law-item-icon { background: var(--kr-light); color: var(--kr); }
     .law-item-text { flex: 1; min-width: 0; }
     .law-item-name { font-size: 13px; font-weight: 600; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .law-item-sub { font-size: 11px; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-top: 1px; }
+    .law-item-sub { font-size: 12px; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-top: 1px; }
     .law-item-arrow { font-size: 12px; color: #c0c0c0; flex-shrink: 0; }
 
     /* ════════════════════════════════
@@ -385,28 +385,35 @@
       display: none;
       position: fixed;
       inset: 0;
-      background: rgba(0,0,0,0.35);
+      background: rgba(0,0,0,0.5);
       z-index: 200;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
     }
-    .panel-overlay.open { display: flex; justify-content: flex-end; }
+    .panel-overlay.open { display: flex; }
     .side-panel {
-      width: 700px;
-      max-width: 95vw;
-      height: 100%;
+      width: 860px;
+      max-width: 96vw;
+      height: 88vh;
+      max-height: 860px;
       background: var(--surface);
-      box-shadow: -8px 0 40px rgba(0,0,0,0.15);
+      box-shadow: 0 24px 80px rgba(0,0,0,0.3);
+      border-radius: 16px;
       display: flex;
       flex-direction: column;
-      animation: slideIn 0.25s ease;
+      animation: modalIn 0.22s ease;
+      overflow: hidden;
     }
-    @keyframes slideIn { from { transform: translateX(100%); } to { transform: translateX(0); } }
+    @keyframes modalIn { from { transform: scale(0.94); opacity: 0; } to { transform: scale(1); opacity: 1; } }
     .panel-header {
       padding: 20px 24px 16px;
       border-bottom: 1px solid var(--border);
       background: var(--jp);
       color: white;
+      border-radius: 16px 16px 0 0;
     }
-    .panel-header .panel-id { font-size: 11px; font-weight: 700; letter-spacing: 1px; opacity: 0.7; margin-bottom: 4px; }
+    .panel-header .panel-id { font-size: 12px; font-weight: 700; letter-spacing: 1px; opacity: 0.7; margin-bottom: 4px; }
     .panel-header .panel-title { font-size: 16px; font-weight: 700; line-height: 1.3; }
     .panel-header .panel-close {
       position: absolute;
@@ -425,7 +432,7 @@
     .panel-body { flex: 1; overflow-y: auto; padding: 20px 24px; }
     .panel-section { margin-bottom: 20px; }
     .panel-section-label {
-      font-size: 10px;
+      font-size: 12px;
       font-weight: 700;
       text-transform: uppercase;
       letter-spacing: 1.2px;
@@ -446,7 +453,7 @@
       border: 1px solid var(--border);
       border-radius: 8px;
       padding: 14px 16px;
-      font-size: 13px;
+      font-size: 14px;
       line-height: 1.8;
       color: #374151;
       font-family: 'Noto Sans KR', sans-serif;
@@ -457,7 +464,7 @@
       border: 1px solid #c8e6c9;
       border-radius: 8px;
       padding: 14px 16px;
-      font-size: 13px;
+      font-size: 14px;
       line-height: 1.8;
       color: #1b3a1c;
     }
@@ -470,9 +477,9 @@
     }
     .article-item {
       display: flex;
-      align-items: center;
+      align-items: flex-start;
       gap: 8px;
-      padding: 9px 12px;
+      padding: 10px 12px;
       cursor: pointer;
       border-bottom: 1px solid #f0f0f0;
       transition: background 0.12s;
@@ -484,24 +491,37 @@
     .article-item:hover { background: var(--jp-light); }
     .article-item.active { background: var(--jp-light); border-left: 3px solid var(--jp); }
     .article-item-num {
-      font-size: 11px;
+      font-size: 12px;
       font-weight: 700;
       color: var(--jp);
-      min-width: 46px;
+      min-width: 52px;
       flex-shrink: 0;
+      padding-top: 1px;
     }
+    .article-item-text { flex: 1; min-width: 0; }
     .article-item-title {
       font-size: 12px;
       color: var(--text);
-      line-height: 1.5;
+      line-height: 1.4;
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
+    }
+    .article-item-title-ko {
+      font-size: 12px;
+      color: var(--jp);
+      line-height: 1.4;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      margin-top: 2px;
+      font-weight: 600;
     }
     /* 한국법 리스트 색상 */
     .kr-panel .article-item:hover { background: var(--kr-light); }
     .kr-panel .article-item.active { background: var(--kr-light); border-left-color: var(--kr); }
     .kr-panel .article-item-num { color: var(--kr); }
+    .kr-panel .article-item-title-ko { color: var(--kr); }
     .panel-footer {
       padding: 16px 24px;
       border-top: 1px solid var(--border);
@@ -514,7 +534,7 @@
       color: white;
       border: none;
       border-radius: 10px;
-      font-size: 13.5px;
+      font-size: 14px;
       font-weight: 700;
       font-family: 'Noto Sans KR', sans-serif;
       cursor: pointer;
@@ -562,7 +582,7 @@
     </div>
   </div>
   <div style="display:flex;align-items:center;gap:16px;">
-    <div style="font-size:11px;color:rgba(255,255,255,0.4);letter-spacing:0.3px;">51개 법령 · RAG 검색</div>
+    <div style="font-size: 12px;color:rgba(255,255,255,0.4);letter-spacing:0.3px;">51개 법령 · RAG 검색</div>
     <div class="flag-pair">🇯🇵 🇰🇷</div>
   </div>
 </header>
@@ -591,9 +611,9 @@
         <div class="card-title">AI 챗봇</div>
         <div class="card-desc">보험 규제를 자유롭게 질문하면 일본·한국 규제를 즉시 비교 분석해 드려요.</div>
         <div style="display:flex;gap:6px;margin-top:10px;flex-wrap:wrap;">
-          <span style="font-size:10px;background:rgba(255,255,255,0.1);padding:3px 8px;border-radius:10px;color:rgba(255,255,255,0.6);">🇯🇵 일본 규제</span>
-          <span style="font-size:10px;background:rgba(255,255,255,0.1);padding:3px 8px;border-radius:10px;color:rgba(255,255,255,0.6);">🇰🇷 한국 규제</span>
-          <span style="font-size:10px;background:rgba(255,255,255,0.1);padding:3px 8px;border-radius:10px;color:rgba(255,255,255,0.6);">⚖️ 즉시 비교</span>
+          <span style="font-size: 12px;background:rgba(255,255,255,0.1);padding:3px 8px;border-radius:10px;color:rgba(255,255,255,0.6);">🇯🇵 일본 규제</span>
+          <span style="font-size: 12px;background:rgba(255,255,255,0.1);padding:3px 8px;border-radius:10px;color:rgba(255,255,255,0.6);">🇰🇷 한국 규제</span>
+          <span style="font-size: 12px;background:rgba(255,255,255,0.1);padding:3px 8px;border-radius:10px;color:rgba(255,255,255,0.6);">⚖️ 즉시 비교</span>
         </div>
         <div class="card-arrow">바로 시작 →</div>
       </div>
@@ -602,9 +622,9 @@
         <div class="card-title">법령 조회</div>
         <div class="card-desc">51개 법령·감독지침을 영역별로 비교하고 원문과 한글 번역을 확인하세요.</div>
         <div style="display:flex;gap:6px;margin-top:10px;flex-wrap:wrap;">
-          <span style="font-size:10px;background:rgba(255,255,255,0.1);padding:3px 8px;border-radius:10px;color:rgba(255,255,255,0.6);">🇯🇵 26개 법령</span>
-          <span style="font-size:10px;background:rgba(255,255,255,0.1);padding:3px 8px;border-radius:10px;color:rgba(255,255,255,0.6);">🇰🇷 25개 법령</span>
-          <span style="font-size:10px;background:rgba(255,255,255,0.1);padding:3px 8px;border-radius:10px;color:rgba(255,255,255,0.6);">🔍 원문+번역</span>
+          <span style="font-size: 12px;background:rgba(255,255,255,0.1);padding:3px 8px;border-radius:10px;color:rgba(255,255,255,0.6);">🇯🇵 26개 법령</span>
+          <span style="font-size: 12px;background:rgba(255,255,255,0.1);padding:3px 8px;border-radius:10px;color:rgba(255,255,255,0.6);">🇰🇷 25개 법령</span>
+          <span style="font-size: 12px;background:rgba(255,255,255,0.1);padding:3px 8px;border-radius:10px;color:rgba(255,255,255,0.6);">🔍 원문+번역</span>
         </div>
         <div class="card-arrow">법령 보기 →</div>
       </div>
@@ -628,7 +648,7 @@
           </div>
         </div>
         <div style="margin-top:14px;display:flex;flex-direction:column;gap:8px;">
-          <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.8px;color:var(--muted);margin-bottom:2px;">예시 질문</div>
+          <div style="font-size: 12px;font-weight:700;text-transform:uppercase;letter-spacing:0.8px;color:var(--muted);margin-bottom:2px;">예시 질문</div>
           <button class="ex-btn" onclick="setQuestion(this.textContent)">💬 일본에서 보험대리점을 등록하려면 어떤 요건이 필요한가요?</button>
           <button class="ex-btn" onclick="setQuestion(this.textContent)">⚖️ 한국과 일본의 보험 설명의무 규제를 비교해 주세요.</button>
           <button class="ex-btn" onclick="setQuestion(this.textContent)">🚀 인슈어테크 회사가 일본에서 소액단기보험업을 하려면?</button>
@@ -685,7 +705,7 @@
     </div>
     <div class="panel-body" style="display:flex;flex-direction:row;padding:0;gap:0;overflow:hidden;">
       <!-- 조문 목록 (좌) -->
-      <div id="article-list-wrap" style="width:210px;min-width:210px;border-right:1px solid var(--border);overflow-y:auto;flex-shrink:0;">
+      <div id="article-list-wrap" style="width:260px;min-width:260px;border-right:1px solid var(--border);overflow-y:auto;flex-shrink:0;">
         <div class="article-list" id="chunk-nav"></div>
       </div>
       <!-- 조문 내용 (우) -->
@@ -1009,12 +1029,16 @@ async function openPanel(lawId) {
       nav.innerHTML = panelChunks.map((c, i) => {
         const num = (() => { const m = (c.article||'').match(/\d+/); return m ? `제${m[0]}조` : (c.article||`#${i+1}`); })();
         const titleJa = (c.title || '');
-        const titleKo = (titles && titles[i]) ? titles[i] : titleJa;
-        const titleDisplay = titleKo.replace(/</g,'&lt;');
+        const titleKo = (titles && titles[i] && titles[i] !== titleJa) ? titles[i] : '';
+        const titleJaDisplay = titleJa.replace(/</g,'&lt;');
+        const titleKoDisplay = titleKo.replace(/</g,'&lt;');
         const titleTooltip = titleJa.replace(/"/g,'&quot;');
         return `<div class="article-item ${i===0?'active':''}" onclick="selectChunk(${i})" title="${titleTooltip}">
           <div class="article-item-num">${num}</div>
-          <div class="article-item-title">${titleDisplay}</div>
+          <div class="article-item-text">
+            <div class="article-item-title">${titleJaDisplay}</div>
+            ${titleKoDisplay ? `<div class="article-item-title-ko">${titleKoDisplay}</div>` : ''}
+          </div>
         </div>`;
       }).join('');
     }
@@ -1112,7 +1136,9 @@ function askFromPanel() {
 
 function closePanel(e) {
   if (e && e.target !== document.getElementById('panel-overlay')) return;
-  document.getElementById('panel-overlay').classList.remove('open');
+  const panel = document.getElementById('panel-overlay');
+  panel.style.animation = 'none';
+  panel.classList.remove('open');
 }
 </script>
 </body>
