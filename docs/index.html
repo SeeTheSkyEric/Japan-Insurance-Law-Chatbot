@@ -942,16 +942,41 @@ async function openPanel(lawId) {
     const nav = document.getElementById('chunk-nav');
     const isKR = !panelLawId.startsWith('JP');
     if (isKR) nav.closest('.article-list')?.parentElement?.classList.add('kr-panel');
-    nav.innerHTML = panelChunks.map((c, i) => {
-      const num = (() => { const m = (c.article||'').match(/\d+/); return m ? `제${m[0]}조` : (c.article||`#${i+1}`); })();
-      const title = (c.title || '').replace(/"/g, '&quot;');
-      const titleDisplay = (c.title || '').replace(/</g,'&lt;');
-      return `<div class="article-item ${i===0?'active':''}" onclick="selectChunk(${i})" title="${title}">
-        <div class="article-item-num">${num}</div>
-        <div class="article-item-title">${titleDisplay}</div>
-      </div>`;
-    }).join('');
+    const isJP = panelLawId.startsWith('JP');
+    // 초기 렌더 (일본어 제목 그대로)
+    function renderNav(titles) {
+      nav.innerHTML = panelChunks.map((c, i) => {
+        const num = (() => { const m = (c.article||'').match(/\d+/); return m ? `제${m[0]}조` : (c.article||`#${i+1}`); })();
+        const titleJa = (c.title || '');
+        const titleKo = (titles && titles[i]) ? titles[i] : titleJa;
+        const titleDisplay = titleKo.replace(/</g,'&lt;');
+        const titleTooltip = titleJa.replace(/"/g,'&quot;');
+        return `<div class="article-item ${i===0?'active':''}" onclick="selectChunk(${i})" title="${titleTooltip}">
+          <div class="article-item-num">${num}</div>
+          <div class="article-item-title">${titleDisplay}</div>
+        </div>`;
+      }).join('');
+    }
+    renderNav(null);
     showChunk(0);
+    // JP법이면 제목 한글 번역 (백그라운드)
+    if (isJP) {
+      const titleList = panelChunks.map((c,i) => `${i+1}. ${c.article||''} ${c.title||''}`.trim()).join('\n');
+      fetch(VERCEL_URL, {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({
+          messages: [{role:'user', content:`다음 일본 법령 조문 번호와 제목 목록을 한국어로 번역하세요. 번호 순서 유지, 한 줄에 하나씩, "번호. 한글제목" 형식으로만 출력하세요.\n\n${titleList}`}],
+          system: '법령 조문 제목을 한국어로 번역하는 전문가입니다. 번역문만 출력하고 부가 설명은 하지 마세요.',
+          query: titleList.slice(0,100)
+        })
+      }).then(r=>r.json()).then(data=>{
+        if (!data.text) return;
+        const lines = data.text.split('\n').filter(l=>l.trim());
+        const koTitles = lines.map(l => l.replace(/^\d+\.\s*/, '').trim());
+        renderNav(koTitles);
+      }).catch(()=>{});
+    }
   } catch (e) {
     document.getElementById('panel-original').textContent = `오류: ${e.message}`;
   }
