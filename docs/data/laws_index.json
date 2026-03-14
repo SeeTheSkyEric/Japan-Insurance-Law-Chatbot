@@ -428,6 +428,112 @@
         "세금·세제"
       ],
       "phase": 3
+    },
+    {
+      "id": "JP-16",
+      "name_ja": "自動車損害賠償保障法",
+      "name_ko": "자동차손해배상보장법",
+      "country": "JP",
+      "category": [
+        "보험사",
+        "의무보험"
+      ],
+      "phase": 2
+    },
+    {
+      "id": "JP-17",
+      "name_ja": "自動車損害賠償保障法施行令",
+      "name_ko": "자동차손해배상보장법 시행령",
+      "country": "JP",
+      "category": [
+        "보험사",
+        "의무보험"
+      ],
+      "phase": 2
+    },
+    {
+      "id": "JP-18",
+      "name_ja": "地震保険に関する法律",
+      "name_ko": "지진보험법",
+      "country": "JP",
+      "category": [
+        "보험사",
+        "손해보험"
+      ],
+      "phase": 2
+    },
+    {
+      "id": "JP-19",
+      "name_ja": "地震保険に関する法律施行令",
+      "name_ko": "지진보험법 시행령",
+      "country": "JP",
+      "category": [
+        "보험사",
+        "손해보험"
+      ],
+      "phase": 2
+    },
+    {
+      "id": "JP-20",
+      "name_ja": "確定拠出年金法",
+      "name_ko": "확정갹출연금법",
+      "country": "JP",
+      "category": [
+        "보험사",
+        "퇴직연금"
+      ],
+      "phase": 2
+    },
+    {
+      "id": "JP-21",
+      "name_ja": "確定給付企業年金法",
+      "name_ko": "확정급부기업연금법",
+      "country": "JP",
+      "category": [
+        "보험사",
+        "퇴직연금"
+      ],
+      "phase": 2
+    },
+    {
+      "id": "JP-25",
+      "name_ja": "銀行法",
+      "name_ko": "은행법",
+      "country": "JP",
+      "category": [
+        "방카슈랑스"
+      ],
+      "phase": 2
+    },
+    {
+      "id": "JP-22",
+      "name_ja": "所得税法",
+      "name_ko": "소득세법 (보험관련)",
+      "country": "JP",
+      "category": [
+        "세금·세제"
+      ],
+      "phase": 3
+    },
+    {
+      "id": "JP-23",
+      "name_ja": "相続税法",
+      "name_ko": "상속세법 (보험관련)",
+      "country": "JP",
+      "category": [
+        "세금·세제"
+      ],
+      "phase": 3
+    },
+    {
+      "id": "JP-24",
+      "name_ja": "法人税法",
+      "name_ko": "법인세법 (보험관련)",
+      "country": "JP",
+      "category": [
+        "세금·세제"
+      ],
+      "phase": 3
     }
   ]
 }
