@@ -322,6 +322,112 @@
         "허가·감독"
       ],
       "phase": 1
+    },
+    {
+      "id": "KR-16",
+      "name_ja": "",
+      "name_ko": "자동차손해배상 보장법",
+      "country": "KR",
+      "category": [
+        "보험사",
+        "의무보험"
+      ],
+      "phase": 2
+    },
+    {
+      "id": "KR-17",
+      "name_ja": "",
+      "name_ko": "자동차손해배상 보장법 시행령",
+      "country": "KR",
+      "category": [
+        "보험사",
+        "의무보험"
+      ],
+      "phase": 2
+    },
+    {
+      "id": "KR-18",
+      "name_ja": "",
+      "name_ko": "화재로 인한 재해보상과 보험가입에 관한 법률",
+      "country": "KR",
+      "category": [
+        "보험사",
+        "손해보험"
+      ],
+      "phase": 2
+    },
+    {
+      "id": "KR-19",
+      "name_ja": "",
+      "name_ko": "근로자퇴직급여 보장법",
+      "country": "KR",
+      "category": [
+        "보험사",
+        "퇴직연금"
+      ],
+      "phase": 2
+    },
+    {
+      "id": "KR-20",
+      "name_ja": "",
+      "name_ko": "근로자퇴직급여 보장법 시행령",
+      "country": "KR",
+      "category": [
+        "보험사",
+        "퇴직연금"
+      ],
+      "phase": 2
+    },
+    {
+      "id": "KR-24",
+      "name_ja": "",
+      "name_ko": "은행법",
+      "country": "KR",
+      "category": [
+        "방카슈랑스"
+      ],
+      "phase": 2
+    },
+    {
+      "id": "KR-25",
+      "name_ja": "",
+      "name_ko": "우체국예금·보험에 관한 법률",
+      "country": "KR",
+      "category": [
+        "보험사",
+        "공제"
+      ],
+      "phase": 2
+    },
+    {
+      "id": "KR-21",
+      "name_ja": "",
+      "name_ko": "소득세법 (보험관련)",
+      "country": "KR",
+      "category": [
+        "세금·세제"
+      ],
+      "phase": 3
+    },
+    {
+      "id": "KR-22",
+      "name_ja": "",
+      "name_ko": "상속세및증여세법 (보험관련)",
+      "country": "KR",
+      "category": [
+        "세금·세제"
+      ],
+      "phase": 3
+    },
+    {
+      "id": "KR-23",
+      "name_ja": "",
+      "name_ko": "법인세법 (보험관련)",
+      "country": "KR",
+      "category": [
+        "세금·세제"
+      ],
+      "phase": 3
     }
   ]
 }
