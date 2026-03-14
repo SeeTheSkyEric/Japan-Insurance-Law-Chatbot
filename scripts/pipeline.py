@@ -100,67 +100,67 @@ JP_LAWS = [
 
 KR_LAWS = [
     # ── phase 1: 보험·금융소비자보호·자본시장 핵심법령 ──────────────────────
-    {"id":"KR-01","phase":1,"law_code":"1000",
+    {"id":"KR-01","phase":1,"law_code":"284143",
      "name_ja":"","name_ko":"상법 (보험편)",
      "category":["보험사","소비자보호"],"tax_filter":False},
-    {"id":"KR-02","phase":1,"law_code":"1739",
+    {"id":"KR-02","phase":1,"law_code":"265389",
      "name_ja":"","name_ko":"보험업법",
      "category":["보험사","허가·감독","보험대리점"],"tax_filter":False},
-    {"id":"KR-03","phase":1,"law_code":"216",
+    {"id":"KR-03","phase":1,"law_code":"279285",
      "name_ja":"","name_ko":"보험업법 시행령",
      "category":["보험사","허가·감독"],"tax_filter":False},
-    {"id":"KR-04","phase":1,"law_code":"73",
+    {"id":"KR-04","phase":1,"law_code":"269221",
      "name_ja":"","name_ko":"보험업법 시행규칙",
      "category":["보험사","허가·감독"],"tax_filter":False},
-    {"id":"KR-07","phase":1,"law_code":"17799",
+    {"id":"KR-07","phase":1,"law_code":"277247",
      "name_ja":"","name_ko":"금융소비자보호에 관한 법률",
      "category":["소비자보호","보험대리점"],"tax_filter":False},
-    {"id":"KR-08","phase":1,"law_code":"17800",
+    {"id":"KR-08","phase":1,"law_code":"281375",
      "name_ja":"","name_ko":"금융소비자보호에 관한 법률 시행령",
      "category":["소비자보호","보험대리점"],"tax_filter":False},
-    {"id":"KR-11","phase":1,"law_code":"8635",
+    {"id":"KR-11","phase":1,"law_code":"284145",
      "name_ja":"","name_ko":"자본시장과 금융투자업에 관한 법률",
      "category":["인슈어테크","소비자보호"],"tax_filter":False},
-    {"id":"KR-12","phase":1,"law_code":"8636",
+    {"id":"KR-12","phase":1,"law_code":"281857",
      "name_ja":"","name_ko":"자본시장과 금융투자업에 관한 법률 시행령",
      "category":["인슈어테크","소비자보호"],"tax_filter":False},
 
     # ── phase 2: 특별법·퇴직연금·방카슈랑스 ────────────────────────────────
-    {"id":"KR-16","phase":2,"law_code":"206",
+    {"id":"KR-16","phase":2,"law_code":"277017",
      "name_ja":"","name_ko":"자동차손해배상 보장법",
      "category":["보험사","의무보험"],"tax_filter":False},
-    {"id":"KR-17","phase":2,"law_code":"161",
+    {"id":"KR-17","phase":2,"law_code":"272517",
      "name_ja":"","name_ko":"자동차손해배상 보장법 시행령",
      "category":["보험사","의무보험"],"tax_filter":False},
-    {"id":"KR-18","phase":2,"law_code":"288",
+    {"id":"KR-18","phase":2,"law_code":"248933",
      "name_ja":"","name_ko":"화재로 인한 재해보상과 보험가입에 관한 법률",
      "category":["보험사","손해보험"],"tax_filter":False},
-    {"id":"KR-19","phase":2,"law_code":"7045",
+    {"id":"KR-19","phase":2,"law_code":"279829",
      "name_ja":"","name_ko":"근로자퇴직급여 보장법",
      "category":["보험사","퇴직연금"],"tax_filter":False},
-    {"id":"KR-20","phase":2,"law_code":"7046",
+    {"id":"KR-20","phase":2,"law_code":"262801",
      "name_ja":"","name_ko":"근로자퇴직급여 보장법 시행령",
      "category":["보험사","퇴직연금"],"tax_filter":False},
-    {"id":"KR-24","phase":2,"law_code":"149",
+    {"id":"KR-24","phase":2,"law_code":"248929",
      "name_ja":"","name_ko":"은행법",
      "category":["방카슈랑스"],"tax_filter":False},
-    {"id":"KR-25","phase":2,"law_code":"3651",
+    {"id":"KR-25","phase":2,"law_code":"265787",
      "name_ja":"","name_ko":"우체국예금·보험에 관한 법률",
      "category":["보험사","공제"],"tax_filter":False},
 
     # ── phase 3: 세법 (보험관련 조문 선별) ──────────────────────────────────
     # lsId=001565 → MST=1565
-    {"id":"KR-21","phase":3,"law_code":"1565",
+    {"id":"KR-21","phase":3,"law_code":"247467",
      "name_ja":"","name_ko":"소득세법 (보험관련)",
      "category":["세금·세제"],"tax_filter":True,
      "tax_keywords":["보험료","보험금","공제","연금","퇴직소득","비과세"]},
     # lsId=001561 → MST=1561
-    {"id":"KR-22","phase":3,"law_code":"1561",
+    {"id":"KR-22","phase":3,"law_code":"276123",
      "name_ja":"","name_ko":"상속세및증여세법 (보험관련)",
      "category":["세금·세제"],"tax_filter":True,
      "tax_keywords":["보험금","보험료","연금","퇴직금","간주"]},
     # lsId=003608 → MST=3608
-    {"id":"KR-23","phase":3,"law_code":"3608",
+    {"id":"KR-23","phase":3,"law_code":"109644",
      "name_ja":"","name_ko":"법인세법 (보험관련)",
      "category":["세금·세제"],"tax_filter":True,
      "tax_keywords":["보험료","보험금","손금","퇴직급여","충당금"]},
@@ -172,6 +172,22 @@ KR_LAWS = [
 
 EGOV_BASE    = "https://laws.e-gov.go.jp/api/1"
 HOUREI_BASE  = "https://www.law.go.kr/DRF/lawService.do"
+
+# 漢数字 → アラビア数字変換（条番号ソート用）
+_KANJI_NUM = {"〇":"0","一":"1","二":"2","三":"3","四":"4","五":"5","六":"6","七":"7","八":"8","九":"9","十":"10","百":"100","千":"1000"}
+def _kanji_to_int(s):
+    """第二十五条 → 25 のような変換"""
+    import re as _re
+    s = _re.sub(r'[第条項]','',s).strip()
+    # 十の位処理
+    result = 0
+    s = s.replace("十","10")
+    try:
+        # 数字のみの場合
+        nums = _re.findall(r"\d+", s)
+        if nums: return int(nums[0])
+    except: pass
+    return 9999
 
 def fetch_jp_law(law: dict) -> list[dict]:
     url = f"{EGOV_BASE}/lawdata/{law['law_code']}"
@@ -197,11 +213,13 @@ def fetch_jp_law(law: dict) -> list[dict]:
             "keywords": _extract_keywords(text),
             "category": law["category"],
         })
+    articles.sort(key=lambda a: _kanji_to_int(a["article"]))
     log.info(f"  JP {law['id']} ({law['name_ja']}): {len(articles)}개 조문")
     return articles
 
 def fetch_kr_law(law: dict) -> list[dict]:
-    params = {"OC": HOUREI_API_KEY, "target": "law", "type": "JSON", "MST": law["law_code"]}
+    # law_code = lsiSeq (법령일련번호)
+    params = {"OC": HOUREI_API_KEY, "target": "law", "type": "JSON", "lsiSeq": law["law_code"]}
     r = requests.get(HOUREI_BASE, params=params, timeout=30)
     r.raise_for_status()
     data = r.json()
@@ -227,6 +245,11 @@ def fetch_kr_law(law: dict) -> list[dict]:
             continue
         if law.get("tax_filter") and not any(kw in text for kw in law.get("tax_keywords", [])):
             continue
+        # KR-01 상법: 보험편(제638조~제739조)만 추출
+        if law["id"] == "KR-01":
+            art_num = int(re.sub(r'[^0-9]', '', str(num)) or "0")
+            if not (638 <= art_num <= 739):
+                continue
         articles.append({
             "id":       f"{law['id']}-art{re.sub(r'[^0-9]', '', str(num))}",
             "law_id":   law["id"],
@@ -236,6 +259,8 @@ def fetch_kr_law(law: dict) -> list[dict]:
             "keywords": _extract_keywords(text),
             "category": law["category"],
         })
+    # 조번호 숫자 정렬
+    articles.sort(key=lambda a: int(re.sub(r"[^0-9]","",a["article"]) or "0"))
     log.info(f"  KR {law['id']} ({law['name_ko']}): {len(articles)}개 조문")
     return articles
 
@@ -388,6 +413,7 @@ def embed_only(country: str, batch: int = 100):
             .limit(batch) \
             .offset(offset)
         if country != "ALL":
+            # law_id 접두사로 필터 (JP-xx / KR-xx)
             q = q.like("law_id", f"{country}%")
         rows = q.execute().data
         if not rows:
