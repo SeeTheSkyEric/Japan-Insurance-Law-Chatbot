@@ -173,21 +173,27 @@ KR_LAWS = [
 EGOV_BASE    = "https://laws.e-gov.go.jp/api/1"
 HOUREI_BASE  = "https://www.law.go.kr/DRF/lawService.do"
 
-# 漢数字 → アラビア数字変換（条番号ソート用）
-_KANJI_NUM = {"〇":"0","一":"1","二":"2","三":"3","四":"4","五":"5","六":"6","七":"7","八":"8","九":"9","十":"10","百":"100","千":"1000"}
 def _kanji_to_int(s):
-    """第二十五条 → 25 のような変換"""
+    """第二十五条 → 25, 第一条の二 → (1,2) のような変換 (ソート用タプル)"""
     import re as _re
-    s = _re.sub(r'[第条項]','',s).strip()
-    # 十の位処理
-    result = 0
-    s = s.replace("十","10")
-    try:
-        # 数字のみの場合
-        nums = _re.findall(r"\d+", s)
-        if nums: return int(nums[0])
-    except: pass
-    return 9999
+    M = {"一":1,"二":2,"三":3,"四":4,"五":5,"六":6,"七":7,"八":8,"九":9}
+    def _ki(t):
+        t = _re.sub(r"[第条項]","",t).strip()
+        if not t: return 0
+        m = _re.search(r"\d+", t)
+        if m: return int(m.group())
+        r = 0
+        if "百" in t:
+            p = t.split("百"); r += (M.get(p[0],1) if p[0] else 1)*100; t = p[1] if len(p)>1 else ""
+        if "十" in t:
+            p = t.split("十"); r += (M.get(p[0],1) if p[0] else 1)*10; t = p[1] if len(p)>1 else ""
+        if t: r += M.get(t[0], 0)
+        return r
+    s = s or ""
+    if "の" in s:
+        p = s.split("の")
+        return (_ki(p[0]), _ki(p[1] if len(p)>1 else ""))
+    return (_ki(s), 0)
 
 def fetch_jp_law(law: dict) -> list[dict]:
     url = f"{EGOV_BASE}/lawdata/{law['law_code']}"
@@ -196,18 +202,43 @@ def fetch_jp_law(law: dict) -> list[dict]:
     root = ET.fromstring(r.text)
 
     articles = []
+    seen_ids = set()
     for art in root.iter("Article"):
-        num   = art.findtext("ArticleTitle") or ""
+        # Num 속성으로 고유 ID 생성 (第一条の二 → "1_2" 형태)
+        num_attr = art.get("Num", "")          # e.g. "1", "1_2", "52_29"
+        num_title = art.findtext("ArticleTitle") or ""  # e.g. 第一条, 第一条の二
         title = art.findtext("ArticleCaption") or ""
-        text  = " ".join(t.strip() for t in art.itertext() if t.strip())
-        if not text or len(text) < 10:
+
+        # 본문 텍스트: ArticleTitle/ArticleCaption 제외하고 Sentence만
+        sentences = []
+        for elem in art.iter():
+            if elem.tag == "Sentence" and elem.text:
+                sentences.append(elem.text.strip())
+        text = " ".join(sentences)
+        if not text or len(text) < 5:
+            # Sentence 없으면 전체 텍스트 fallback
+            text = " ".join(t.strip() for t in art.itertext() if t.strip())
+        if not text or len(text) < 5:
             continue
         if law.get("tax_filter") and not any(kw in text for kw in law.get("tax_keywords", [])):
             continue
+
+        # 고유 ID: Num 속성 기반 (없으면 ArticleTitle의 숫자들)
+        if num_attr:
+            art_id = f"{law['id']}-{num_attr}"
+        else:
+            digits = re.sub(r'[^0-9_]', '', num_title.replace('の', '_'))
+            art_id = f"{law['id']}-{digits or num_title}"
+
+        # 중복 ID 처리
+        if art_id in seen_ids:
+            art_id = f"{art_id}-dup{len(seen_ids)}"
+        seen_ids.add(art_id)
+
         articles.append({
-            "id":       f"{law['id']}-{re.sub(r'[^0-9]', '', num) or num}",
+            "id":       art_id,
             "law_id":   law["id"],
-            "article":  num,
+            "article":  num_title or num_attr,
             "title":    title,
             "text":     text[:2000],
             "keywords": _extract_keywords(text),
@@ -218,11 +249,22 @@ def fetch_jp_law(law: dict) -> list[dict]:
     return articles
 
 def fetch_kr_law(law: dict) -> list[dict]:
-    # law_code = lsiSeq (법령일련번호)
+    # lsiSeq 파라미터로 법령 조회
     params = {"OC": HOUREI_API_KEY, "target": "law", "type": "JSON", "lsiSeq": law["law_code"]}
-    r = requests.get(HOUREI_BASE, params=params, timeout=30)
+    r = requests.get(HOUREI_BASE, params=params, timeout=60)
     r.raise_for_status()
-    data = r.json()
+    try:
+        data = r.json()
+    except Exception as e:
+        log.error(f"  KR {law['id']} JSON 파싱 실패: {e} / 응답: {r.text[:200]}")
+        return []
+    # 응답 최상위 키 로그
+    top_keys = list(data.keys()) if isinstance(data, dict) else type(data).__name__
+    log.info(f"  KR {law['id']} API 응답 최상위 키: {top_keys}")
+    # 오류 응답 확인
+    if isinstance(data, dict) and data.get("result"):
+        log.error(f"  KR {law['id']} API 오류: {data}")
+        return []
 
     jo_list = data.get("법령", {}).get("조문", {})
     if isinstance(jo_list, dict):
