@@ -312,14 +312,31 @@ def fetch_kr_law(law: dict) -> list[dict]:
 
 def split_chunks(articles: list[dict]) -> list[dict]:
     chunks = []
+    seen = set()
     for art in articles:
-        if len(art["text"]) <= 1000:
+        base_id = art["id"]
+        if len(art["text"]) <= 1500:
+            # 중복 ID 방지
+            uid = base_id
+            if uid in seen:
+                continue  # 완전 중복이면 스킵
+            seen.add(uid)
             chunks.append(art)
         else:
             parts = re.split(r'(?=①|②|③|④|⑤|⑥|⑦|⑧|⑨|⑩|　一　|　二　)', art["text"])
-            for i, para in enumerate(parts):
-                if para.strip():
-                    chunks.append({**art, "id": f"{art['id']}-p{i+1}", "text": para.strip()[:2000]})
+            valid_parts = [p.strip() for p in parts if p.strip() and len(p.strip()) >= 10]
+            if len(valid_parts) <= 1:
+                # 분할이 안 되면 통으로 저장 (2000자로 자름)
+                uid = base_id
+                if uid not in seen:
+                    seen.add(uid)
+                    chunks.append({**art, "text": art["text"][:2000]})
+            else:
+                for i, para in enumerate(valid_parts):
+                    uid = f"{base_id}-p{i+1}"
+                    if uid not in seen:
+                        seen.add(uid)
+                        chunks.append({**art, "id": uid, "text": para[:2000]})
     log.info(f"  청크 분할: {len(articles)}개 → {len(chunks)}개")
     return chunks
 
