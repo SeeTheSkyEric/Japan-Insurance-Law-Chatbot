@@ -1,5 +1,5 @@
 // ============================================================
-// 한일 보험법 챗봇 v2 — Vercel Serverless API (스트리밍 버전)
+// 한일 보험법 챗봇 v2 — Vercel Serverless API
 // ============================================================
 
 const SUPABASE_URL = process.env.SUPABASE_URL;
@@ -47,7 +47,8 @@ function formatChunks(chunks, country) {
   return chunks.map(c => {
     const ref = `[${c.law_id} ${c.article_num}${c.article_title ? ` ${c.article_title}` : ""}]`;
     const text = country === "JP" ? (c.text_ja || c.text_ko || "") : (c.text_ko || c.text_ja || "");
-    return `${flag} ${ref} (유사도: ${(c.similarity * 100).toFixed(1)}%)\n${text.slice(0, 500)}`;
+    return `${flag} ${ref} (유사도: ${(c.similarity * 100).toFixed(1)}%)
+${text.slice(0, 500)}`;
   }).join("\n\n");
 }
 
@@ -59,7 +60,6 @@ module.exports = async function handler(req, res) {
   if (req.method !== "POST") return res.status(405).json({ error: "Method not allowed" });
 
   const { messages, system, query } = req.body;
-  const stream = req.body.stream !== false; // 기본값 true
 
   // ── ① 벡터 검색 ─────────────────────────────────────────────
   let jpContext = "", krContext = "", ragError = null;
@@ -91,34 +91,7 @@ module.exports = async function handler(req, res) {
     }
   }
 
-  // ── ③ Claude 스트리밍 호출 ───────────────────────────────────
-  if (!stream) {
-    // 비스트리밍 (번역 등 내부 호출용)
-    const claudeRes = await fetch("https://api.anthropic.com/v1/messages", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "x-api-key": CLAUDE_KEY,
-        "anthropic-version": "2023-06-01",
-      },
-      body: JSON.stringify({
-        model: "claude-sonnet-4-6",
-        max_tokens: 2000,
-        system,
-        messages: lastMessages,
-      }),
-    });
-    const data = await claudeRes.json();
-    if (!claudeRes.ok) return res.status(200).json({ text: `오류: ${data?.error?.message}` });
-    return res.status(200).json({ text: data.content?.[0]?.text || "" });
-  }
-
-  // 스트리밍 응답 헤더
-  res.setHeader("Content-Type", "text/event-stream");
-  res.setHeader("Cache-Control", "no-cache");
-  res.setHeader("Connection", "keep-alive");
-  res.setHeader("X-Accel-Buffering", "no");
-
+  // ── ③ Claude 호출 ────────────────────────────────────────────
   const claudeRes = await fetch("https://api.anthropic.com/v1/messages", {
     method: "POST",
     headers: {
@@ -129,49 +102,19 @@ module.exports = async function handler(req, res) {
     body: JSON.stringify({
       model: "claude-sonnet-4-6",
       max_tokens: 2000,
-      stream: true,
       system,
       messages: lastMessages,
     }),
   });
 
+  const data = await claudeRes.json();
   if (!claudeRes.ok) {
-    const err = await claudeRes.json();
-    res.write(`data: ${JSON.stringify({ error: err?.error?.message || "Claude 오류" })}\n\n`);
-    return res.end();
+    return res.status(200).json({ text: `오류: ${data?.error?.message || JSON.stringify(data)}` });
   }
 
-  // SSE 스트림 파싱 → 클라이언트로 전달
-  const reader = claudeRes.body.getReader();
-  const decoder = new TextDecoder();
-  let buffer = "";
-
-  try {
-    while (true) {
-      const { done, value } = await reader.read();
-      if (done) break;
-      buffer += decoder.decode(value, { stream: true });
-      const lines = buffer.split("\n");
-      buffer = lines.pop(); // 마지막 불완전 라인 보존
-
-      for (const line of lines) {
-        if (!line.startsWith("data: ")) continue;
-        const data = line.slice(6).trim();
-        if (data === "[DONE]") continue;
-        try {
-          const evt = JSON.parse(data);
-          if (evt.type === "content_block_delta" && evt.delta?.type === "text_delta") {
-            res.write(`data: ${JSON.stringify({ text: evt.delta.text })}\n\n`);
-          }
-          if (evt.type === "message_stop") {
-            res.write(`data: ${JSON.stringify({ done: true })}\n\n`);
-          }
-        } catch {}
-      }
-    }
-  } catch (e) {
-    console.error("스트림 오류:", e.message);
-  }
-
-  res.end();
+  return res.status(200).json({
+    text: data.content?.[0]?.text || "응답을 받지 못했습니다.",
+    hasContext: !!(jpContext || krContext),
+    ragError: ragError || undefined,
+  });
 };
