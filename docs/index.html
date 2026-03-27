@@ -40,8 +40,8 @@ header{background:var(--navy);color:#fff;padding:14px 28px;display:flex;align-it
 .msg.user{align-self:flex-end;max-width:600px}
 .msg.user .bubble{background:var(--navy);color:#fff;border-radius:16px 16px 4px 16px;padding:12px 18px;font-size:14px;line-height:1.6}
 .msg.bot .bubble{background:var(--sur);border-radius:4px 16px 16px 16px;padding:20px 24px;box-shadow:0 2px 8px rgba(0,0,0,.06);border:1px solid var(--brd)}
-.section{margin-bottom:18px}.section:last-child{margin-bottom:0}
-.sec-hd{display:flex;align-items:center;gap:8px;margin-bottom:10px;padding-bottom:8px;border-bottom:1px solid var(--brd)}
+.section{margin-bottom:0;padding:20px 0;border-bottom:1px solid var(--brd)}.section:last-child{border-bottom:none;padding-bottom:0}.section:first-child{padding-top:0}
+.sec-hd{display:flex;align-items:center;gap:8px;margin-bottom:12px}
 .dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
 .sec-jp .dot{background:var(--jp-m)}.sec-kr .dot{background:var(--kr-m)}.sec-cmp .dot{background:var(--gold)}
 .sec-title{font-size:13px;font-weight:700}
@@ -251,7 +251,7 @@ var URLMAP = {
   "JP-PDF-03":{t:"fsa",u:"https://www.fsa.go.jp/common/law/guide/kinyushohin/"},
   "JP-PDF-04":{t:"egov",u:"https://laws.e-gov.go.jp/law/412CO0000000484"},
   "JP-PDF-05":{t:"egov",u:"https://laws.e-gov.go.jp/law/412AC0000000101"},
-  "JP-PDF-06":{t:"fsa",u:"https://www.fsa.go.jp/common/law/guide/kinyuservice/"},
+  "JP-PDF-06":{t:"fsa",u:"https://www.fsa.go.jp/common/law/guide/kinsyu/"},
   "JP-PDF-07":{t:"egov",u:"https://laws.e-gov.go.jp/law/340M50000040012"},
   "JP-PDF-08":{t:"egov",u:"https://laws.e-gov.go.jp/law/340CO0000000097"},
   "JP-PDF-09":{t:"egov",u:"https://laws.e-gov.go.jp/law/340AC0000000034"},
@@ -277,38 +277,38 @@ var URLMAP = {
   "JP-PDF-29":{t:"egov",u:"https://laws.e-gov.go.jp/law/341M50000040020"},
   "JP-PDF-30":{t:"egov",u:"https://laws.e-gov.go.jp/law/341CO0000000164"},
   "JP-PDF-31":{t:"egov",u:"https://laws.e-gov.go.jp/law/341AC0000000073"},
-  "KR-PDF-01":{t:"law",u:"https://www.law.go.kr/LSW/lsInfoP.do?lsiSeq=277247"},
-  "KR-PDF-02":{t:"law",u:"https://www.law.go.kr/LSW/lsInfoP.do?lsiSeq=281375"},
-  "KR-PDF-03":{t:"law",u:"https://www.law.go.kr/LSW/lsInfoP.do?lsiSeq=277247"},
+  "KR-PDF-02":{t:"law",u:"https://www.law.go.kr/법령/금융소비자보호에관한법률시행령"},
+  "KR-PDF-03":{t:"law",u:"https://www.law.go.kr/법령/금융소비자보호에관한법률"},
+  "KR-PDF-07":{t:"law",u:"https://www.law.go.kr/법령/법인세법시행규칙"},
+  "KR-PDF-08":{t:"law",u:"https://www.law.go.kr/법령/법인세법시행령"},
+  "KR-PDF-09":{t:"law",u:"https://www.law.go.kr/법령/법인세법"},
+  "KR-PDF-12":{t:"law",u:"https://www.law.go.kr/법령/보험업법시행규칙"},
+  "KR-PDF-13":{t:"law",u:"https://www.law.go.kr/법령/보험업법시행령"},
+  "KR-PDF-14":{t:"law",u:"https://www.law.go.kr/법령/보험업법"},
+  "KR-PDF-15":{t:"law",u:"https://www.law.go.kr/법령/상법"},
+  "KR-PDF-16":{t:"law",u:"https://www.law.go.kr/법령/상속세및증여세법시행규칙"},
+  "KR-PDF-17":{t:"law",u:"https://www.law.go.kr/법령/상속세및증여세법시행령"},
+  "KR-PDF-18":{t:"law",u:"https://www.law.go.kr/법령/상속세및증여세법"},
+  "KR-PDF-19":{t:"law",u:"https://www.law.go.kr/법령/소득세법시행규칙"},
+  "KR-PDF-20":{t:"law",u:"https://www.law.go.kr/법령/소득세법시행령"},
+  "KR-PDF-21":{t:"law",u:"https://www.law.go.kr/법령/소득세법"},
+  "KR-PDF-22":{t:"law",u:"https://www.law.go.kr/법령/은행법시행령"},
+  "KR-PDF-23":{t:"law",u:"https://www.law.go.kr/법령/은행법"},
+  "KR-PDF-24":{t:"law",u:"https://www.law.go.kr/법령/자동차손해배상보장법시행규칙"},
+  "KR-PDF-25":{t:"law",u:"https://www.law.go.kr/법령/자동차손해배상보장법시행령"},
+  "KR-PDF-26":{t:"law",u:"https://www.law.go.kr/법령/자동차손해배상보장법"},
+  "KR-PDF-27":{t:"law",u:"https://www.law.go.kr/법령/자본시장과금융투자업에관한법률시행규칙"},
+  "KR-PDF-28":{t:"law",u:"https://www.law.go.kr/법령/자본시장과금융투자업에관한법률시행령"},
+  "KR-PDF-29":{t:"law",u:"https://www.law.go.kr/법령/자본시장과금융투자업에관한법률"},
+  "KR-PDF-30":{t:"law",u:"https://www.law.go.kr/법령/화재로인한재해보상과보험가입에관한법률시행규칙"},
+  "KR-PDF-31":{t:"law",u:"https://www.law.go.kr/법령/화재로인한재해보상과보험가입에관한법률시행령"},
+  "KR-PDF-32":{t:"law",u:"https://www.law.go.kr/법령/화재로인한재해보상과보험가입에관한법률"},
+  "KR-PDF-01":{t:"law",u:"https://www.law.go.kr/행정규칙/금융소비자보호에관한감독규정"},
+  "KR-PDF-05":{t:"law",u:"https://www.law.go.kr/행정규칙/금융투자업규정"},
+  "KR-PDF-10":{t:"law",u:"https://www.law.go.kr/행정규칙/보험업감독규정"},
   "KR-PDF-04":{t:"fss",u:"https://www.fss.or.kr/fss/job/lrgRegItnInfo/list.do?menuNo=200488"},
-  "KR-PDF-05":{t:"law",u:"https://www.law.go.kr/LSW/lsInfoP.do?lsiSeq=284145"},
   "KR-PDF-06":{t:"fss",u:"https://www.fss.or.kr/fss/job/lrgRegItnInfo/list.do?menuNo=200488"},
-  "KR-PDF-07":{t:"law",u:"https://www.law.go.kr/LSW/lsInfoP.do?lsiSeq=109644"},
-  "KR-PDF-08":{t:"law",u:"https://www.law.go.kr/LSW/lsInfoP.do?lsiSeq=109644"},
-  "KR-PDF-09":{t:"law",u:"https://www.law.go.kr/LSW/lsInfoP.do?lsiSeq=109644"},
-  "KR-PDF-10":{t:"law",u:"https://www.law.go.kr/LSW/lsInfoP.do?lsiSeq=265389"},
-  "KR-PDF-11":{t:"fss",u:"https://www.fss.or.kr/fss/job/lrgRegItnInfo/list.do?menuNo=200488"},
-  "KR-PDF-12":{t:"law",u:"https://www.law.go.kr/LSW/lsInfoP.do?lsiSeq=269221"},
-  "KR-PDF-13":{t:"law",u:"https://www.law.go.kr/LSW/lsInfoP.do?lsiSeq=279285"},
-  "KR-PDF-14":{t:"law",u:"https://www.law.go.kr/LSW/lsInfoP.do?lsiSeq=265389"},
-  "KR-PDF-15":{t:"law",u:"https://www.law.go.kr/LSW/lsInfoP.do?lsiSeq=284143"},
-  "KR-PDF-16":{t:"law",u:"https://www.law.go.kr/LSW/lsInfoP.do?lsiSeq=276123"},
-  "KR-PDF-17":{t:"law",u:"https://www.law.go.kr/LSW/lsInfoP.do?lsiSeq=276123"},
-  "KR-PDF-18":{t:"law",u:"https://www.law.go.kr/LSW/lsInfoP.do?lsiSeq=276123"},
-  "KR-PDF-19":{t:"law",u:"https://www.law.go.kr/LSW/lsInfoP.do?lsiSeq=247467"},
-  "KR-PDF-20":{t:"law",u:"https://www.law.go.kr/LSW/lsInfoP.do?lsiSeq=247467"},
-  "KR-PDF-21":{t:"law",u:"https://www.law.go.kr/LSW/lsInfoP.do?lsiSeq=247467"},
-  "KR-PDF-22":{t:"law",u:"https://www.law.go.kr/LSW/lsInfoP.do?lsiSeq=248929"},
-  "KR-PDF-23":{t:"law",u:"https://www.law.go.kr/LSW/lsInfoP.do?lsiSeq=248929"},
-  "KR-PDF-24":{t:"law",u:"https://www.law.go.kr/LSW/lsInfoP.do?lsiSeq=277017"},
-  "KR-PDF-25":{t:"law",u:"https://www.law.go.kr/LSW/lsInfoP.do?lsiSeq=272517"},
-  "KR-PDF-26":{t:"law",u:"https://www.law.go.kr/LSW/lsInfoP.do?lsiSeq=277017"},
-  "KR-PDF-27":{t:"law",u:"https://www.law.go.kr/LSW/lsInfoP.do?lsiSeq=281857"},
-  "KR-PDF-28":{t:"law",u:"https://www.law.go.kr/LSW/lsInfoP.do?lsiSeq=281857"},
-  "KR-PDF-29":{t:"law",u:"https://www.law.go.kr/LSW/lsInfoP.do?lsiSeq=284145"},
-  "KR-PDF-30":{t:"law",u:"https://www.law.go.kr/LSW/lsInfoP.do?lsiSeq=248933"},
-  "KR-PDF-31":{t:"law",u:"https://www.law.go.kr/LSW/lsInfoP.do?lsiSeq=248933"},
-  "KR-PDF-32":{t:"law",u:"https://www.law.go.kr/LSW/lsInfoP.do?lsiSeq=248933"}
+  "KR-PDF-11":{t:"fss",u:"https://www.fss.or.kr/fss/job/lrgRegItnInfo/list.do?menuNo=200488"}
 };
 
 var BTNLABEL = {
@@ -456,9 +456,25 @@ function loadLaws() {
   .catch(function(e) { document.getElementById("jp-list").textContent = "오류: " + e.message; });
 }
 
+var KR_ORDER = ["KR-PDF-14","KR-PDF-13","KR-PDF-12","KR-PDF-10","KR-PDF-11","KR-PDF-03","KR-PDF-02","KR-PDF-01","KR-PDF-04","KR-PDF-15","KR-PDF-29","KR-PDF-28","KR-PDF-27","KR-PDF-05","KR-PDF-06","KR-PDF-23","KR-PDF-22","KR-PDF-26","KR-PDF-25","KR-PDF-24","KR-PDF-32","KR-PDF-31","KR-PDF-30","KR-PDF-09","KR-PDF-08","KR-PDF-07","KR-PDF-18","KR-PDF-17","KR-PDF-16","KR-PDF-21","KR-PDF-20","KR-PDF-19"];
+var JP_ORDER = ["JP-PDF-11","JP-PDF-13","JP-PDF-12","JP-PDF-15","JP-PDF-14","JP-PDF-25","JP-PDF-10","JP-PDF-05","JP-PDF-04","JP-PDF-06","JP-PDF-02","JP-PDF-01","JP-PDF-03","JP-PDF-24","JP-PDF-23","JP-PDF-22","JP-PDF-28","JP-PDF-27","JP-PDF-26","JP-PDF-31","JP-PDF-30","JP-PDF-29","JP-PDF-09","JP-PDF-08","JP-PDF-07","JP-PDF-18","JP-PDF-17","JP-PDF-16","JP-PDF-21","JP-PDF-20","JP-PDF-19"];
+
+function sortLaws(arr, order) {
+  var sorted = [];
+  order.forEach(function(id) {
+    var law = arr.find(function(l) { return l.id === id; });
+    if (law) sorted.push(law);
+  });
+  // 순서 배열에 없는 항목은 뒤에 추가
+  arr.forEach(function(l) {
+    if (order.indexOf(l.id) === -1) sorted.push(l);
+  });
+  return sorted;
+}
+
 function renderGrid() {
-  var jp = laws.filter(function(l) { return l.country === "JP"; });
-  var kr = laws.filter(function(l) { return l.country === "KR"; });
+  var jp = sortLaws(laws.filter(function(l) { return l.country === "JP"; }), JP_ORDER);
+  var kr = sortLaws(laws.filter(function(l) { return l.country === "KR"; }), KR_ORDER);
   document.getElementById("jp-cnt").textContent = jp.length + "개";
   document.getElementById("kr-cnt").textContent = kr.length + "개";
   document.getElementById("jp-list").innerHTML = renderList(jp, "jp");
