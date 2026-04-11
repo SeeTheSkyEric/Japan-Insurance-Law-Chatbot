@@ -236,10 +236,11 @@ var SB  = "https://rkkzpzkzhntmrblbqiis.supabase.co";
 var KEY = "sb_publishable_InLulrU4pUHVUk_z-ZyOTQ_2k6pJyj6";
 var SYSTEM = [
   "당신은 한일 보험 규제 전문가 AI입니다.",
-  "반드시 아래 형식으로 한국어로 답변하세요.",
+  "반드시 아래 세 개의 헤딩을 정확히 그대로 사용하여 한국어로 답변하세요.",
+  "다른 헤딩 형식(#, ###, 번호 등)은 절대 사용하지 말고, 반드시 아래 형식만 사용하세요.",
   "",
   "## 일본 규제",
-  "(일본 보험 관련 법령과 규제를 상세히 설명)",
+  "(일본 보험 관련 법령과 규제를 상세히 설명. 참조 법령 조문이 있으면 인용하세요.)",
   "",
   "## 한국 유사 규제",
   "(한국의 대응 법령과 규제를 설명)",
@@ -247,6 +248,7 @@ var SYSTEM = [
   "## 한일 비교",
   "(유사점, 차이점, 실무적 시사점을 표 또는 항목별로 정리)",
   "",
+  "중요: 답변은 반드시 '## 일본 규제' 로 시작해야 합니다. 다른 인트로 문장 없이 바로 시작하세요.",
   "보험 규제와 무관한 질문은 정중히 거절하세요."
 ].join("\n");
 var URLMAP = {
@@ -586,44 +588,39 @@ function openComPanel(id){
   .then(function(r){return r.json();})
   .then(function(d){
     if(!Array.isArray(d)||!d.length){document.getElementById("com-text-ja").textContent="데이터가 없습니다.";return;}
-    comChunks=d; renderComNav(); showComChunk(0);
+    comChunks=d;
+    /* 전체 텍스트를 하나로 합치기 */
+    var fullJa=d.map(function(c){return c.text_ja||c.text_ko||"";}).join("\n\n");
+    document.getElementById("com-text-ja").textContent=fullJa;
+    document.getElementById("com-text-ko").textContent="← 한국어 번역 탭을 클릭하면 전체 번역합니다.";
   })
   .catch(function(e){document.getElementById("com-text-ja").textContent="오류: "+e.message;});
 }
-function renderComNav(){
-  var nav=document.getElementById("anav");
-  nav.innerHTML=comChunks.map(function(c,i){
-    var title=(c.article_title||c.article_num||("§"+(i+1))).slice(0,40);
-    return '<div class="aitem aitem-com'+(i===0?" active":"")+'" data-idx="'+i+'"><div class="aitem-n">'+(c.article_num||("§"+(i+1)))+'</div><div><div class="aitem-t" style="white-space:normal;font-size:11px">'+title+'</div></div></div>';
-  }).join("");
-  nav.querySelectorAll(".aitem").forEach(function(el){el.addEventListener("click",function(){selComChunk(parseInt(this.getAttribute("data-idx")));});});
-}
-function selComChunk(idx){
-  comIdx=idx;
-  document.querySelectorAll(".aitem").forEach(function(el,i){el.classList.toggle("active",i===idx);});
-  showComChunk(idx);
-}
-function showComChunk(idx){
-  var c=comChunks[idx]; if(!c) return;
-  var jaText=c.text_ja||c.text_ko||"(내용 없음)";
-  document.getElementById("com-text-ja").textContent=(c.article_title?c.article_title+"\n\n":"")+jaText;
-  var ck=comLawId+"_"+idx;
-  if(comTransCache[ck]) document.getElementById("com-text-ko").textContent=comTransCache[ck];
-  else document.getElementById("com-text-ko").textContent="← 한국어 번역 탭을 클릭하면 번역합니다.";
-}
+function renderComNav(){}
+function selComChunk(idx){}
+function showComChunk(idx){}
 function switchComTab(lang){
   document.getElementById("ctab-ja").classList.toggle("active",lang==="ja");
   document.getElementById("ctab-ko").classList.toggle("active",lang==="ko");
   document.getElementById("cpane-ja").classList.toggle("active",lang==="ja");
   document.getElementById("cpane-ko").classList.toggle("active",lang==="ko");
   if(lang==="ko"){
-    var c=comChunks[comIdx]; if(!c) return;
-    var ck=comLawId+"_"+comIdx; if(comTransCache[ck]) return;
-    var koEl=document.getElementById("com-text-ko"); koEl.textContent="번역 중...";
-    var src=c.text_ja||c.text_ko||"";
-    fetch(API,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({messages:[{role:"user",content:"다음 일본어 텍스트를 자연스러운 한국어로 번역해 주세요.\n\n"+(c.article_title?c.article_title+"\n":"")+src}],system:"일본 법령 및 법률 해설 전문 번역가. 번역문만 출력하세요.",query:src.slice(0,100),stream:false})})
+    var ck=comLawId+"_all"; if(comTransCache[ck]){document.getElementById("com-text-ko").textContent=comTransCache[ck];return;}
+    var koEl=document.getElementById("com-text-ko"); koEl.textContent="번역 중... (전체 문서 번역, 시간이 걸릴 수 있습니다)";
+    /* 전체 텍스트 번역 — 길면 앞 3000자만 */
+    var fullJa=comChunks.map(function(c){return c.text_ja||c.text_ko||"";}).join("\n\n");
+    var src=fullJa.slice(0,4000);
+    fetch(API,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({
+      messages:[{role:"user",content:"다음 일본어 법률 해설 문서를 자연스러운 한국어로 번역해 주세요. 원문의 구조와 형식을 유지해 주세요.\n\n"+src}],
+      system:"일본 법령 및 법률 해설 전문 번역가. 번역문만 출력하세요. 원문 구조를 그대로 유지하세요.",
+      query:src.slice(0,100),stream:false
+    })})
     .then(function(r){return r.json();})
-    .then(function(data){var t=data.text||"번역 실패";koEl.textContent=t;comTransCache[ck]=t;})
+    .then(function(data){
+      var t=data.text||"번역 실패";
+      if(fullJa.length>4000) t+=("\n\n--- (원문이 길어 앞부분만 번역되었습니다. 전체 원문은 일본어 탭에서 확인하세요.) ---");
+      koEl.textContent=t; comTransCache[ck]=t;
+    })
     .catch(function(e){koEl.textContent="번역 오류: "+e.message;});
   }
 }
