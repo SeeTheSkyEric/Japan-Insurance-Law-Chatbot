@@ -67,7 +67,6 @@ header{background:var(--navy);color:#fff;padding:14px 28px;display:flex;align-it
 @keyframes bounce{0%,80%,100%{transform:translateY(0)}40%{transform:translateY(-7px)}}
 .ex-btn{text-align:left;padding:11px 16px;border:1px solid var(--brd);border-radius:10px;background:var(--bg);font-size:13px;color:var(--txt);cursor:pointer;font-family:"Noto Sans KR",sans-serif;transition:all .15s;line-height:1.5;display:block;width:100%}
 .ex-btn:hover{border-color:var(--navy2);background:#fff;transform:translateX(3px)}
-/* 법령 조회 */
 #page-laws{overflow-y:auto}
 .laws-wrap{padding:28px}
 .laws-hd{margin-bottom:24px}
@@ -78,7 +77,6 @@ header{background:var(--navy);color:#fff;padding:14px 28px;display:flex;align-it
 .col-hd{padding:14px 20px;display:flex;align-items:center;gap:10px;font-weight:700;font-size:14px;color:#fff}
 .jp .col-hd{background:var(--jp)}.kr .col-hd{background:var(--kr)}
 .cbadge{margin-left:auto;background:rgba(255,255,255,.25);font-size:12px;font-weight:600;padding:2px 8px;border-radius:10px}
-/* 법령 아이템 */
 .law-item{padding:10px 16px;border-bottom:1px solid #f0f0f0;transition:background .15s}
 .law-item:last-child{border-bottom:none}
 .jp .law-item:hover{background:var(--jp-l)}
@@ -89,7 +87,6 @@ header{background:var(--navy);color:#fff;padding:14px 28px;display:flex;align-it
 .kr .lnum{background:var(--kr-l);color:var(--kr)}
 .lname{flex:1;font-size:13px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .lsub{font-size:11px;color:var(--mut);margin-top:2px;padding-left:34px}
-/* 법령 버튼 */
 .law-btns{display:flex;gap:6px;margin-top:6px;padding-left:34px;flex-wrap:wrap}
 .lbtn{font-size:11px;font-weight:600;padding:3px 10px;border-radius:20px;border:none;cursor:pointer;font-family:"Noto Sans KR",sans-serif;transition:all .15s;white-space:nowrap}
 .lbtn-art{background:var(--navy);color:#fff}
@@ -102,7 +99,11 @@ header{background:var(--navy);color:#fff;padding:14px 28px;display:flex;align-it
 .lbtn-law:hover{background:#c8e6c9}
 .lbtn-fss{background:#f3e5f5;color:#4a148c;border:1px solid #ce93d8}
 .lbtn-fss:hover{background:#e1bee7}
-/* 조문 패널 */
+.lbtn-com{background:#fff8e1;color:#f57f17;border:1px solid #ffe082}
+.lbtn-com:hover{background:#fff3e0}
+.com-section-hd{padding:10px 16px 6px;font-size:11px;font-weight:700;color:var(--mut);letter-spacing:1px;display:flex;align-items:center;gap:6px;border-top:2px dashed var(--brd);margin-top:4px}
+.jp .com-section-hd{color:var(--jp);border-top-color:#c8e6c9}
+.kr .com-section-hd{color:var(--kr);border-top-color:#ce93d8}
 .overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:200;align-items:center;justify-content:center;padding:24px}
 .overlay.open{display:flex}
 .panel{width:860px;max-width:96vw;height:88vh;background:var(--sur);box-shadow:0 24px 80px rgba(0,0,0,.3);border-radius:16px;display:flex;flex-direction:column;animation:mIn .22s ease;overflow:hidden}
@@ -122,6 +123,8 @@ header{background:var(--navy);color:#fff;padding:14px 28px;display:flex;align-it
 .aitem-ko{font-size:11px;color:var(--jp);margin-top:2px;font-weight:600}
 .kr-nav .aitem:hover{background:var(--kr-l)}.kr-nav .aitem.active{background:var(--kr-l);border-left-color:var(--kr)}
 .kr-nav .aitem-n{color:var(--kr)}.kr-nav .aitem-ko{color:var(--kr)}
+.aitem-com.active{background:#fff3e0!important;border-left-color:#f57f17!important}
+.aitem-com .aitem-n{color:#f57f17!important}
 .pcontent{flex:1;overflow-y:auto;padding:20px}
 .slabel{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:1.2px;color:var(--mut);margin-bottom:10px;display:flex;align-items:center;gap:6px}
 .slabel::after{content:"";flex:1;height:1px;background:var(--brd)}
@@ -130,6 +133,15 @@ header{background:var(--navy);color:#fff;padding:14px 28px;display:flex;align-it
 .pft{padding:14px 20px;border-top:1px solid var(--brd)}
 .cmpbtn{width:100%;padding:12px;background:var(--navy);color:#fff;border:none;border-radius:10px;font-size:14px;font-weight:700;font-family:"Noto Sans KR",sans-serif;cursor:pointer;transition:background .2s}
 .cmpbtn:hover{background:var(--navy2)}
+.ptabs{display:flex;gap:0;border-bottom:1px solid var(--brd);padding:0 20px;background:#fafafa;flex-shrink:0}
+.ptab{padding:10px 18px;font-size:13px;font-weight:600;color:var(--mut);cursor:pointer;border-bottom:3px solid transparent;margin-bottom:-1px;transition:all .2s}
+.ptab.active{color:var(--navy);border-bottom-color:var(--gold)}
+.ptab:hover:not(.active){color:var(--txt)}
+.com-body{flex:1;overflow-y:auto;padding:20px;display:flex;flex-direction:column;gap:12px}
+.com-pane{display:none}.com-pane.active{display:block}
+.com-text{background:#fafafa;border:1px solid var(--brd);border-radius:8px;padding:16px;font-size:14px;line-height:1.85;color:#374151;white-space:pre-wrap}
+.com-trans{background:#fffde7;border:1px solid #ffe082;border-radius:8px;padding:16px;font-size:14px;line-height:1.85;color:#4a3800;white-space:pre-wrap}
+.author-badge{display:inline-flex;align-items:center;gap:5px;background:rgba(245,127,23,.1);border:1px solid rgba(245,127,23,.3);color:#e65100;font-size:11px;font-weight:700;padding:3px 10px;border-radius:12px;margin-bottom:10px}
 ::-webkit-scrollbar{width:6px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:#d0d0d0;border-radius:3px}
 </style>
 </head>
@@ -140,7 +152,7 @@ header{background:var(--navy);color:#fff;padding:14px 28px;display:flex;align-it
     <div class="sub">Habitfactory x Signal Financial Lab</div>
   </div>
   <div style="display:flex;align-items:center;gap:16px">
-    <div style="font-size:12px;color:rgba(255,255,255,.4)">63개 법령 · RAG v2</div>
+    <div style="font-size:12px;color:rgba(255,255,255,.4)">66개 법령·해설 · RAG v2</div>
     <div style="font-size:20px">🇯🇵 🇰🇷</div>
   </div>
 </header>
@@ -149,7 +161,6 @@ header{background:var(--navy);color:#fff;padding:14px 28px;display:flex;align-it
   <div class="tab" id="tab-chat" onclick="showPage('chat')">💬 AI 챗봇</div>
   <div class="tab" id="tab-laws" onclick="showPage('laws')">📚 법령 조회</div>
 </div>
-
 <div class="page active" id="page-landing">
   <div class="landing-inner">
     <div class="badge">Insurance Regulatory Intelligence</div>
@@ -165,13 +176,12 @@ header{background:var(--navy);color:#fff;padding:14px 28px;display:flex;align-it
       <div class="card" onclick="showPage('laws')">
         <div class="card-icon">📚</div>
         <div class="card-title">법령 조회</div>
-        <div class="card-desc">63개 법령·감독지침을 비교하고 원문과 한글 번역을 확인하세요.</div>
+        <div class="card-desc">법령 원문과 해설·참고자료를 비교하고 한글 번역을 확인하세요.</div>
         <div class="card-arrow">법령 보기 →</div>
       </div>
     </div>
   </div>
 </div>
-
 <div class="page" id="page-chat">
   <div class="messages" id="messages"></div>
   <div class="ibar">
@@ -179,12 +189,11 @@ header{background:var(--navy);color:#fff;padding:14px 28px;display:flex;align-it
     <button id="sbtn" onclick="doSend()">전송</button>
   </div>
 </div>
-
 <div class="page" id="page-laws">
   <div class="laws-wrap">
     <div class="laws-hd">
       <h2>📋 법령 비교 조회</h2>
-      <p>일본·한국 보험 관련 63개 법령을 비교하세요.</p>
+      <p>일본·한국 보험 관련 법령과 해설·참고자료를 조회하세요.</p>
     </div>
     <div class="grid2">
       <div class="col jp">
@@ -198,7 +207,6 @@ header{background:var(--navy);color:#fff;padding:14px 28px;display:flex;align-it
     </div>
   </div>
 </div>
-
 <div class="overlay" id="overlay" onclick="closePanel(event)">
   <div class="panel" onclick="event.stopPropagation()">
     <div class="phd" id="phd">
@@ -206,9 +214,9 @@ header{background:var(--navy);color:#fff;padding:14px 28px;display:flex;align-it
       <div class="ptitle" id="ptitle"></div>
       <div class="pclose" onclick="closePanel()">&#x2715;</div>
     </div>
-    <div class="pbody">
+    <div class="pbody" id="pbody">
       <div class="anav" id="anav"></div>
-      <div class="pcontent">
+      <div class="pcontent" id="pcontent">
         <div class="slabel" id="orig-label">원문</div>
         <div class="aorig" id="aorig"></div>
         <div id="trans-wrap" style="display:none">
@@ -222,12 +230,10 @@ header{background:var(--navy);color:#fff;padding:14px 28px;display:flex;align-it
     </div>
   </div>
 </div>
-
 <script>
 var API = "https://japan-insurance-law-chatbot.vercel.app/api/chat";
 var SB  = "https://rkkzpzkzhntmrblbqiis.supabase.co";
 var KEY = "sb_publishable_InLulrU4pUHVUk_z-ZyOTQ_2k6pJyj6";
-
 var SYSTEM = [
   "당신은 한일 보험 규제 전문가 AI입니다.",
   "반드시 아래 형식으로 한국어로 답변하세요.",
@@ -243,8 +249,6 @@ var SYSTEM = [
   "",
   "보험 규제와 무관한 질문은 정중히 거절하세요."
 ].join("\n");
-
-/* URL 매핑 */
 var URLMAP = {
   "JP-PDF-01":{t:"egov",u:"https://laws.e-gov.go.jp/law/340CO0000000321"},
   "JP-PDF-02":{t:"egov",u:"https://laws.e-gov.go.jp/law/323AC0000000025"},
@@ -310,360 +314,337 @@ var URLMAP = {
   "KR-PDF-06":{t:"fss",u:"https://www.fss.or.kr/fss/job/lrgRegItnInfo/list.do?menuNo=200488"},
   "KR-PDF-11":{t:"fss",u:"https://www.fss.or.kr/fss/job/lrgRegItnInfo/list.do?menuNo=200488"}
 };
-
-var BTNLABEL = {
-  "egov":"e-Gov",
-  "fsa":"FSA",
-  "law":"법제처",
-  "fss":"금융감독원"
-};
-
-/* 페이지 전환 */
+var BTNLABEL = {"egov":"e-Gov","fsa":"FSA","law":"법제처","fss":"금융감독원"};
 function showPage(p) {
   var pages = document.querySelectorAll(".page");
   var tabs  = document.querySelectorAll(".tab");
-  for (var i = 0; i < pages.length; i++) pages[i].classList.remove("active");
-  for (var i = 0; i < tabs.length;  i++) tabs[i].classList.remove("active");
-  document.getElementById("page-" + p).classList.add("active");
-  document.getElementById("tab-"  + p).classList.add("active");
-  if (p === "laws") loadLaws();
+  for (var i=0;i<pages.length;i++) pages[i].classList.remove("active");
+  for (var i=0;i<tabs.length;i++)  tabs[i].classList.remove("active");
+  document.getElementById("page-"+p).classList.add("active");
+  document.getElementById("tab-"+p).classList.add("active");
+  if (p==="laws") loadLaws();
 }
-
-/* 챗봇 초기 메시지 */
 (function initChat() {
-  var wrap = document.getElementById("messages");
-  var d = document.createElement("div");
-  d.className = "msg bot";
-  var b = document.createElement("div");
-  b.className = "bubble";
-  var s = document.createElement("div");
-  s.className = "section sec-jp";
-  var hd = document.createElement("div"); hd.className = "sec-hd";
-  var dot = document.createElement("div"); dot.className = "dot";
-  var ttl = document.createElement("div"); ttl.className = "sec-title";
-  ttl.textContent = "한일 보험 규제 챗봇에 오신 것을 환영합니다";
+  var wrap=document.getElementById("messages");
+  var d=document.createElement("div"); d.className="msg bot";
+  var b=document.createElement("div"); b.className="bubble";
+  var s=document.createElement("div"); s.className="section sec-jp";
+  var hd=document.createElement("div"); hd.className="sec-hd";
+  var dot=document.createElement("div"); dot.className="dot";
+  var ttl=document.createElement("div"); ttl.className="sec-title";
+  ttl.textContent="한일 보험 규제 챗봇에 오신 것을 환영합니다";
   hd.appendChild(dot); hd.appendChild(ttl);
-  var body = document.createElement("div"); body.className = "sec-body";
-  body.innerHTML = "보험사·대리점·인슈어테크 담당자를 위한 <strong>한국·일본 보험 규제 비교 AI</strong>입니다.<br>63개 법령 기반 RAG 검색으로 정확한 답변을 드립니다.";
-  s.appendChild(hd); s.appendChild(body);
-  b.appendChild(s);
-  var eWrap = document.createElement("div");
-  eWrap.style.cssText = "margin-top:14px;display:flex;flex-direction:column;gap:8px";
-  var exs = [
-    "일본에서 보험대리점을 등록하려면 어떤 요건이 필요한가요?",
-    "한국과 일본의 보험 설명의무 규제를 비교해 주세요.",
-    "인슈어테크 회사가 일본에서 소액단기보험업을 하려면?",
-    "퇴직연금 운용 규제를 한일 비교해 주세요."
-  ];
-  exs.forEach(function(txt) {
-    var btn = document.createElement("button");
-    btn.className = "ex-btn";
-    btn.textContent = txt;
-    btn.onclick = function() { doSendText(this.textContent); };
-    eWrap.appendChild(btn);
+  var body=document.createElement("div"); body.className="sec-body";
+  body.innerHTML="보험사·대리점·인슈어테크 담당자를 위한 <strong>한국·일본 보험 규제 비교 AI</strong>입니다.<br>법령 및 해설 자료 기반 RAG 검색으로 정확한 답변을 드립니다.";
+  s.appendChild(hd); s.appendChild(body); b.appendChild(s);
+  var eWrap=document.createElement("div");
+  eWrap.style.cssText="margin-top:14px;display:flex;flex-direction:column;gap:8px";
+  var exs=["일본에서 보험대리점을 등록하려면 어떤 요건이 필요한가요?","한국과 일본의 보험 설명의무 규제를 비교해 주세요.","인슈어테크 회사가 일본에서 소액단기보험업을 하려면?","퇴직연금 운용 규제를 한일 비교해 주세요."];
+  exs.forEach(function(txt){
+    var btn=document.createElement("button"); btn.className="ex-btn"; btn.textContent=txt;
+    btn.onclick=function(){doSendText(this.textContent);}; eWrap.appendChild(btn);
   });
-  b.appendChild(eWrap);
-  d.appendChild(b);
-  wrap.appendChild(d);
+  b.appendChild(eWrap); d.appendChild(b); wrap.appendChild(d);
 })();
-
-/* 챗봇 */
-var hist = [];
-function doSend() {
-  var q = document.getElementById("qinput").value.trim();
-  if (q) doSendText(q);
-}
-function doSendText(q) {
-  document.getElementById("qinput").value = "";
-  addUser(q);
-  document.getElementById("sbtn").disabled = true;
-  var lid = addLoading();
-  hist.push({ role: "user", content: q });
-  fetch(API, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ messages: hist, system: SYSTEM, query: q, stream: false })
-  })
-  .then(function(r) { return r.json(); })
-  .then(function(data) {
-    var t = data.text || "오류가 발생했습니다.";
-    removeLoading(lid);
-    hist.push({ role: "assistant", content: t });
-    if (hist.length > 12) hist = hist.slice(-12);
+var hist=[];
+function doSend(){var q=document.getElementById("qinput").value.trim();if(q)doSendText(q);}
+function doSendText(q){
+  document.getElementById("qinput").value=""; addUser(q);
+  document.getElementById("sbtn").disabled=true;
+  var lid=addLoading(); hist.push({role:"user",content:q});
+  fetch(API,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({messages:hist,system:SYSTEM,query:q,stream:false})})
+  .then(function(r){return r.json();})
+  .then(function(data){
+    var t=data.text||"오류가 발생했습니다."; removeLoading(lid);
+    hist.push({role:"assistant",content:t});
+    if(hist.length>12) hist=hist.slice(-12);
     addBot(t);
   })
-  .catch(function(e) { removeLoading(lid); addRaw("오류: " + e.message); })
-  .finally(function() { document.getElementById("sbtn").disabled = false; });
+  .catch(function(e){removeLoading(lid);addRaw("오류: "+e.message);})
+  .finally(function(){document.getElementById("sbtn").disabled=false;});
 }
-function addUser(t) {
-  var d = document.createElement("div"); d.className = "msg user";
-  var b = document.createElement("div"); b.className = "bubble"; b.textContent = t;
-  d.appendChild(b); document.getElementById("messages").appendChild(d);
-  d.scrollIntoView({ behavior: "smooth" });
+function addUser(t){
+  var d=document.createElement("div"); d.className="msg user";
+  var b=document.createElement("div"); b.className="bubble"; b.textContent=t;
+  d.appendChild(b); document.getElementById("messages").appendChild(d); d.scrollIntoView({behavior:"smooth"});
 }
-function addBot(t) {
-  var d = document.createElement("div"); d.className = "msg bot";
-  var secs = [
-    { re: /##\s*[^\n]*일본[^\n]*\n([\s\S]*?)(?=##|$)/, label: "일본 규제",    cls: "sec-jp"  },
-    { re: /##\s*[^\n]*한국[^\n]*\n([\s\S]*?)(?=##|$)/, label: "한국 유사 규제", cls: "sec-kr" },
-    { re: /##\s*[^\n]*비교[^\n]*\n([\s\S]*?)$/,        label: "한일 비교",    cls: "sec-cmp" }
+function addBot(t){
+  var d=document.createElement("div"); d.className="msg bot";
+  var secs=[
+    {re:/##\s*[^\n]*일본[^\n]*\n([\s\S]*?)(?=##|$)/,label:"일본 규제",cls:"sec-jp"},
+    {re:/##\s*[^\n]*한국[^\n]*\n([\s\S]*?)(?=##|$)/,label:"한국 유사 규제",cls:"sec-kr"},
+    {re:/##\s*[^\n]*비교[^\n]*\n([\s\S]*?)$/,label:"한일 비교",cls:"sec-cmp"}
   ];
-  var html = ""; var matched = false;
-  secs.forEach(function(s) {
-    var m = t.match(s.re);
-    if (m) {
-      matched = true;
-      html += '<div class="section ' + s.cls + '">'
-            + '<div class="sec-hd"><div class="dot"></div><div class="sec-title">' + s.label + '</div></div>'
-            + '<div class="sec-body">' + marked.parse(m[1].trim()) + '</div></div>';
-    }
+  var html=""; var matched=false;
+  secs.forEach(function(s){
+    var m=t.match(s.re);
+    if(m){matched=true;html+='<div class="section '+s.cls+'"><div class="sec-hd"><div class="dot"></div><div class="sec-title">'+s.label+'</div></div><div class="sec-body">'+marked.parse(m[1].trim())+'</div></div>';}
   });
-  if (!matched) html = '<div class="sec-body">' + marked.parse(t) + '</div>';
-  var b = document.createElement("div"); b.className = "bubble"; b.innerHTML = html;
-  d.appendChild(b); document.getElementById("messages").appendChild(d);
-  d.scrollIntoView({ behavior: "smooth" });
+  if(!matched) html='<div class="sec-body">'+marked.parse(t)+'</div>';
+  var b=document.createElement("div"); b.className="bubble"; b.innerHTML=html;
+  d.appendChild(b); document.getElementById("messages").appendChild(d); d.scrollIntoView({behavior:"smooth"});
 }
-function addRaw(t) {
-  var d = document.createElement("div"); d.className = "msg bot";
-  var b = document.createElement("div"); b.className = "bubble";
-  var s = document.createElement("div"); s.className = "sec-body"; s.textContent = t;
+function addRaw(t){
+  var d=document.createElement("div"); d.className="msg bot";
+  var b=document.createElement("div"); b.className="bubble";
+  var s=document.createElement("div"); s.className="sec-body"; s.textContent=t;
   b.appendChild(s); d.appendChild(b); document.getElementById("messages").appendChild(d);
 }
-var _lid = 0;
-function addLoading() {
-  var id = ++_lid;
-  var d = document.createElement("div"); d.className = "msg bot"; d.id = "ld" + id;
-  d.innerHTML = '<div class="bubble"><div class="loading"><span></span><span></span><span></span></div></div>';
-  document.getElementById("messages").appendChild(d);
-  d.scrollIntoView({ behavior: "smooth" });
-  return id;
+var _lid=0;
+function addLoading(){
+  var id=++_lid; var d=document.createElement("div"); d.className="msg bot"; d.id="ld"+id;
+  d.innerHTML='<div class="bubble"><div class="loading"><span></span><span></span><span></span></div></div>';
+  document.getElementById("messages").appendChild(d); d.scrollIntoView({behavior:"smooth"}); return id;
 }
-function removeLoading(id) { var el = document.getElementById("ld" + id); if (el) el.remove(); }
+function removeLoading(id){var el=document.getElementById("ld"+id);if(el)el.remove();}
 
 /* 법령 조회 */
-var laws = []; var lawsLoaded = false;
-function loadLaws() {
-  if (lawsLoaded) return;
-  fetch(SB + "/rest/v1/laws_v2?select=id,country,name_ja,name_ko&order=id", {
-    headers: { apikey: KEY, Authorization: "Bearer " + KEY }
+var laws=[]; var lawsLoaded=false;
+function loadLaws(){
+  if(lawsLoaded) return;
+  fetch(SB+"/rest/v1/laws_v2?select=id,country,name_ja,name_ko,source_type,author&order=id",{
+    headers:{apikey:KEY,Authorization:"Bearer "+KEY}
   })
-  .then(function(r) { return r.json(); })
-  .then(function(d) {
-    if (!Array.isArray(d)) throw new Error("로드 실패");
-    laws = d; lawsLoaded = true;
-    renderGrid();
+  .then(function(r){return r.json();})
+  .then(function(d){
+    if(!Array.isArray(d)) throw new Error("로드 실패");
+    laws=d; lawsLoaded=true; renderGrid();
   })
-  .catch(function(e) { document.getElementById("jp-list").textContent = "오류: " + e.message; });
+  .catch(function(e){document.getElementById("jp-list").textContent="오류: "+e.message;});
 }
-
-var KR_ORDER = ["KR-PDF-14","KR-PDF-13","KR-PDF-12","KR-PDF-10","KR-PDF-11","KR-PDF-03","KR-PDF-02","KR-PDF-01","KR-PDF-04","KR-PDF-15","KR-PDF-29","KR-PDF-28","KR-PDF-27","KR-PDF-05","KR-PDF-06","KR-PDF-23","KR-PDF-22","KR-PDF-26","KR-PDF-25","KR-PDF-24","KR-PDF-32","KR-PDF-31","KR-PDF-30","KR-PDF-09","KR-PDF-08","KR-PDF-07","KR-PDF-18","KR-PDF-17","KR-PDF-16","KR-PDF-21","KR-PDF-20","KR-PDF-19"];
-var JP_ORDER = ["JP-PDF-11","JP-PDF-13","JP-PDF-12","JP-PDF-15","JP-PDF-14","JP-PDF-25","JP-PDF-10","JP-PDF-05","JP-PDF-04","JP-PDF-06","JP-PDF-02","JP-PDF-01","JP-PDF-03","JP-PDF-24","JP-PDF-23","JP-PDF-22","JP-PDF-28","JP-PDF-27","JP-PDF-26","JP-PDF-31","JP-PDF-30","JP-PDF-29","JP-PDF-09","JP-PDF-08","JP-PDF-07","JP-PDF-18","JP-PDF-17","JP-PDF-16","JP-PDF-21","JP-PDF-20","JP-PDF-19"];
-
-function sortLaws(arr, order) {
-  var sorted = [];
-  order.forEach(function(id) {
-    var law = arr.find(function(l) { return l.id === id; });
-    if (law) sorted.push(law);
-  });
-  // 순서 배열에 없는 항목은 뒤에 추가
-  arr.forEach(function(l) {
-    if (order.indexOf(l.id) === -1) sorted.push(l);
-  });
+var KR_ORDER=["KR-PDF-14","KR-PDF-13","KR-PDF-12","KR-PDF-10","KR-PDF-11","KR-PDF-03","KR-PDF-02","KR-PDF-01","KR-PDF-04","KR-PDF-15","KR-PDF-29","KR-PDF-28","KR-PDF-27","KR-PDF-05","KR-PDF-06","KR-PDF-23","KR-PDF-22","KR-PDF-26","KR-PDF-25","KR-PDF-24","KR-PDF-32","KR-PDF-31","KR-PDF-30","KR-PDF-09","KR-PDF-08","KR-PDF-07","KR-PDF-18","KR-PDF-17","KR-PDF-16","KR-PDF-21","KR-PDF-20","KR-PDF-19"];
+var JP_ORDER=["JP-PDF-11","JP-PDF-13","JP-PDF-12","JP-PDF-15","JP-PDF-14","JP-PDF-25","JP-PDF-10","JP-PDF-05","JP-PDF-04","JP-PDF-06","JP-PDF-02","JP-PDF-01","JP-PDF-03","JP-PDF-24","JP-PDF-23","JP-PDF-22","JP-PDF-28","JP-PDF-27","JP-PDF-26","JP-PDF-31","JP-PDF-30","JP-PDF-29","JP-PDF-09","JP-PDF-08","JP-PDF-07","JP-PDF-18","JP-PDF-17","JP-PDF-16","JP-PDF-21","JP-PDF-20","JP-PDF-19"];
+function sortLaws(arr,order){
+  var sorted=[];
+  order.forEach(function(id){var law=arr.find(function(l){return l.id===id&&(!l.source_type||l.source_type==='pdf');});if(law)sorted.push(law);});
+  arr.forEach(function(l){if(!l.source_type||l.source_type==='pdf'){if(order.indexOf(l.id)===-1)sorted.push(l);}});
   return sorted;
 }
-
-function renderGrid() {
-  var jp = sortLaws(laws.filter(function(l) { return l.country === "JP"; }), JP_ORDER);
-  var kr = sortLaws(laws.filter(function(l) { return l.country === "KR"; }), KR_ORDER);
-  document.getElementById("jp-cnt").textContent = jp.length + "개";
-  document.getElementById("kr-cnt").textContent = kr.length + "개";
-  document.getElementById("jp-list").innerHTML = renderList(jp, "jp");
-  document.getElementById("kr-list").innerHTML = renderList(kr, "kr");
+function renderGrid(){
+  var jp_pdf=sortLaws(laws.filter(function(l){return l.country==="JP";}),JP_ORDER);
+  var kr_pdf=sortLaws(laws.filter(function(l){return l.country==="KR";}),KR_ORDER);
+  var jp_com=laws.filter(function(l){return l.country==="JP"&&l.source_type==="commentary";});
+  var kr_com=laws.filter(function(l){return l.country==="KR"&&l.source_type==="commentary";});
+  document.getElementById("jp-cnt").textContent=(jp_pdf.length+jp_com.length)+"개";
+  document.getElementById("kr-cnt").textContent=(kr_pdf.length+kr_com.length)+"개";
+  document.getElementById("jp-list").innerHTML=renderList(jp_pdf,jp_com,"jp");
+  document.getElementById("kr-list").innerHTML=renderList(kr_pdf,kr_com,"kr");
 }
-
-function renderList(arr, side) {
-  if (!arr.length) return "<div style='padding:20px;color:#888;font-size:13px'>없음</div>";
-  return arr.map(function(l, i) {
-    var numStr = i < 9 ? "0" + (i + 1) : String(i + 1);
-    var um = URLMAP[l.id] || null;
-    var isJP = (side === "jp");
-
-    /* 버튼 HTML */
-    var btnHtml = '<div class="law-btns">';
-    if (isJP) {
-      btnHtml += '<button class="lbtn lbtn-art" onclick="event.stopPropagation();openPanel(\'' + l.id + '\')">조문별 보기(한글 번역)</button>';
-    }
-    if (um) {
-      var lbl = BTNLABEL[um.t] || um.t;
-      btnHtml += '<button class="lbtn lbtn-' + um.t + '" onclick="event.stopPropagation();window.open(\'' + um.u + '\',\'_blank\')">' + lbl + ' 원문</button>';
-    }
-    btnHtml += '</div>';
-
-    return '<div class="law-item">'
-      + '<div class="law-row1">'
-      + '<div class="lnum">' + numStr + '</div>'
-      + '<div class="lname">' + l.name_ko + '</div>'
-      + '</div>'
-      + (l.name_ja && l.name_ja !== l.name_ko ? '<div class="lsub">' + l.name_ja + '</div>' : '')
-      + btnHtml
-      + '</div>';
+function renderList(pdfArr,comArr,side){
+  if(!pdfArr.length&&!comArr.length) return "<div style='padding:20px;color:#888;font-size:13px'>없음</div>";
+  var html="";
+  /* 법령 원문 */
+  html+=pdfArr.map(function(l,i){
+    var numStr=i<9?"0"+(i+1):String(i+1);
+    var um=URLMAP[l.id]||null; var isJP=(side==="jp");
+    var btnHtml='<div class="law-btns">';
+    if(isJP) btnHtml+='<button class="lbtn lbtn-art" onclick="event.stopPropagation();openPanel(\''+l.id+'\')">조문별 보기(한글 번역)</button>';
+    if(um){var lbl=BTNLABEL[um.t]||um.t;btnHtml+='<button class="lbtn lbtn-'+um.t+'" onclick="event.stopPropagation();window.open(\''+um.u+'\',\'_blank\')">'+lbl+' 원문</button>';}
+    btnHtml+='</div>';
+    return '<div class="law-item"><div class="law-row1"><div class="lnum">'+numStr+'</div><div class="lname">'+l.name_ko+'</div></div>'+(l.name_ja&&l.name_ja!==l.name_ko?'<div class="lsub">'+l.name_ja+'</div>':'')+btnHtml+'</div>';
   }).join("");
+  /* 해설·참고자료 */
+  if(comArr.length){
+    html+='<div class="com-section-hd">📝 해설·참고자료</div>';
+    html+=comArr.map(function(l,i){
+      var numStr=String(101+i);
+      var um=URLMAP[l.id]||null;
+      var btnHtml='<div class="law-btns"><button class="lbtn lbtn-com" onclick="event.stopPropagation();openComPanel(\''+l.id+'\')">📄 전문 보기</button>';
+      if(um){var lbl=BTNLABEL[um.t]||um.t;btnHtml+='<button class="lbtn lbtn-'+um.t+'" onclick="event.stopPropagation();window.open(\''+um.u+'\',\'_blank\')">'+lbl+' 원문</button>';}
+      btnHtml+='</div>';
+      return '<div class="law-item"><div class="law-row1"><div class="lnum" style="background:#fff8e1;color:#f57f17">'+numStr+'</div><div class="lname">'+l.name_ko+'</div></div>'+(l.author?'<div class="lsub">📝 '+l.author+'</div>':'')+btnHtml+'</div>';
+    }).join("");
+  }
+  return html;
 }
 
 /* 조문 패널 */
-var pChunks = []; var pLawId = ""; var pIdx = 0; var tCache = {};
-
-function ki(s) {
+var pChunks=[]; var pLawId=""; var pIdx=0; var tCache={};
+function ki(s){
   var M={"\u4e00":1,"\u4e8c":2,"\u4e09":3,"\u56db":4,"\u4e94":5,"\u516d":6,"\u4e03":7,"\u516b":8,"\u4e5d":9};
-  if (!s) return 0;
-  var am = s.match(/\d+/); if (am) return parseInt(am[0]);
+  if(!s) return 0; var am=s.match(/\d+/); if(am) return parseInt(am[0]);
   var r=0;
-  if (s.indexOf("\u767e")>=0){var p=s.split("\u767e");r+=(M[p[0]]||1)*100;s=p[1]||"";}
-  if (s.indexOf("\u5341")>=0){var p=s.split("\u5341");r+=(M[p[0]]||1)*10;s=p[1]||"";}
-  if (s) r+=M[s[0]]||0;
-  return r;
+  if(s.indexOf("\u767e")>=0){var p=s.split("\u767e");r+=(M[p[0]]||1)*100;s=p[1]||"";}
+  if(s.indexOf("\u5341")>=0){var p=s.split("\u5341");r+=(M[p[0]]||1)*10;s=p[1]||"";}
+  if(s) r+=M[s[0]]||0; return r;
 }
-function sortKey(a) {
-  if (!a) return [9999,0];
+function sortKey(a){
+  if(!a) return [9999,0];
   var s=a.replace(/[\u7b2c\u6761\u9805\uc870]/g,"").trim();
-  if (s.indexOf("\u306e")>=0){var p=s.split("\u306e");return[ki(p[0]),ki(p[1]||"")];}
-  if (s.indexOf("\uc758")>=0){var p=s.split("\uc758");return[parseInt(p[0].replace(/[^0-9]/g,""))||9999,parseInt(p[1].replace(/[^0-9]/g,""))||0];}
-  var n=parseInt(s.replace(/[^0-9]/g,""));
-  return[isNaN(n)?ki(s):n,0];
+  if(s.indexOf("\u306e")>=0){var p=s.split("\u306e");return[ki(p[0]),ki(p[1]||"")];}
+  if(s.indexOf("\uc758")>=0){var p=s.split("\uc758");return[parseInt(p[0].replace(/[^0-9]/g,""))||9999,parseInt(p[1].replace(/[^0-9]/g,""))||0];}
+  var n=parseInt(s.replace(/[^0-9]/g,"")); return[isNaN(n)?ki(s):n,0];
 }
-function fmtNum(a) {
-  if (!a) return "-";
-  if (/^\uc81c\d/.test(a)) return a;
-  var k=sortKey(a);var main=k[0];var sub=k[1];
-  if (main>=9999) return a;
-  var isJP=/\u7b2c/.test(a);
-  var pre=isJP?"\u7b2c":"\uc81c";var suf=isJP?"\u6761":"\uc870";
+function fmtNum(a){
+  if(!a) return "-"; if(/^\uc81c\d/.test(a)) return a;
+  var k=sortKey(a);var main=k[0];var sub=k[1]; if(main>=9999) return a;
+  var isJP=/\u7b2c/.test(a); var pre=isJP?"\u7b2c":"\uc81c";var suf=isJP?"\u6761":"\uc870";
   return sub?pre+main+suf+"\uc758"+sub:pre+main+suf;
 }
-
-function openPanel(id) {
-  var law=null;
-  for (var i=0;i<laws.length;i++){if(laws[i].id===id){law=laws[i];break;}}
-  if (!law) return;
-  pLawId=id; pIdx=0;
+function restoreLawPbody(){
+  document.getElementById("pbody").innerHTML=
+    '<div class="anav" id="anav"></div>'+
+    '<div class="pcontent" id="pcontent">'+
+      '<div class="slabel" id="orig-label">원문</div>'+
+      '<div class="aorig" id="aorig"></div>'+
+      '<div id="trans-wrap" style="display:none">'+
+        '<div class="slabel">한글 번역 (자동)</div>'+
+        '<div class="atrans" id="atrans"></div>'+
+      '</div>'+
+    '</div>';
+}
+function openPanel(id){
+  var law=null; for(var i=0;i<laws.length;i++){if(laws[i].id===id){law=laws[i];break;}} if(!law) return;
+  pLawId=id; pIdx=0; comLawId=""; comChunks=[];
   var isJP=id.indexOf("JP")===0;
+  restoreLawPbody();
   document.getElementById("pid").textContent=id;
   document.getElementById("ptitle").textContent=law.name_ko;
   document.getElementById("aorig").textContent="로딩 중...";
   document.getElementById("trans-wrap").style.display="none";
   document.getElementById("anav").innerHTML="";
-  var phd=document.getElementById("phd");
-  phd.className=isJP?"phd":"phd kr";
+  document.getElementById("phd").className=isJP?"phd":"phd kr";
   document.getElementById("anav").className=isJP?"anav":"anav kr-nav";
   document.getElementById("overlay").classList.add("open");
-
-  fetch(SB+"/rest/v1/chunks_v2?law_id=eq."+id+"&select=id,article_num,article_title,article_title_ko,text_ja,text_ko&limit=500",{
-    headers:{apikey:KEY,Authorization:"Bearer "+KEY}
-  })
+  fetch(SB+"/rest/v1/chunks_v2?law_id=eq."+id+"&select=id,article_num,article_title,article_title_ko,text_ja,text_ko&limit=500",{headers:{apikey:KEY,Authorization:"Bearer "+KEY}})
   .then(function(r){return r.json();})
   .then(function(d){
-    if (!Array.isArray(d)||!d.length){
-      document.getElementById("aorig").textContent="수집된 조문 데이터가 없습니다.";
-      return;
-    }
+    if(!Array.isArray(d)||!d.length){document.getElementById("aorig").textContent="수집된 조문 데이터가 없습니다.";return;}
     var map={};
     d.forEach(function(c){
       var k=c.article_num;
-      if (map[k]){
-        var bk=isJP?"text_ja":"text_ko";
-        var add=c[bk]||"";
-        if (add&&(map[k][bk]||"").indexOf(add.slice(0,20))<0) map[k][bk]=(map[k][bk]||"")+"\n"+add;
-      } else { map[k]=JSON.parse(JSON.stringify(c)); }
+      if(map[k]){var bk=isJP?"text_ja":"text_ko";var add=c[bk]||"";if(add&&(map[k][bk]||"").indexOf(add.slice(0,20))<0)map[k][bk]=(map[k][bk]||"")+"\n"+add;}
+      else{map[k]=JSON.parse(JSON.stringify(c));}
     });
-    pChunks=Object.values(map).sort(function(a,b){
-      var ka=sortKey(a.article_num),kb=sortKey(b.article_num);
-      return ka[0]!==kb[0]?ka[0]-kb[0]:ka[1]-kb[1];
-    });
+    pChunks=Object.values(map).sort(function(a,b){var ka=sortKey(a.article_num),kb=sortKey(b.article_num);return ka[0]!==kb[0]?ka[0]-kb[0]:ka[1]-kb[1];});
     renderNav(null); showChunk(0);
-    /* JP: 조제목 일괄 번역 */
-    if (isJP&&pChunks.some(function(c){return c.article_title;})) {
+    if(isJP&&pChunks.some(function(c){return c.article_title;})){
       var tlist=pChunks.map(function(c,i){return (i+1)+". "+fmtNum(c.article_num)+" "+(c.article_title||"");}).join("\n");
-      fetch(API,{
-        method:"POST",headers:{"Content-Type":"application/json"},
-        body:JSON.stringify({messages:[{role:"user",content:"다음 일본 법령 조문 목록을 한국어로 번역. 반드시 번호. 한글제목 형식만 출력:\n\n"+tlist}],system:"일본 법령 조문 제목 번역 전문가. 번호. 한글제목 형식만 출력.",query:tlist.slice(0,100),stream:false})
-      })
+      fetch(API,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({messages:[{role:"user",content:"다음 일본 법령 조문 목록을 한국어로 번역. 반드시 번호. 한글제목 형식만 출력:\n\n"+tlist}],system:"일본 법령 조문 제목 번역 전문가. 번호. 한글제목 형식만 출력.",query:tlist.slice(0,100),stream:false})})
       .then(function(r){return r.json();})
-      .then(function(dd){
-        if (!dd.text) return;
-        var ko=dd.text.split("\n").filter(function(l){return l.trim();}).map(function(l){return l.replace(/^\d+\.?\s*/,"").trim();});
-        renderNav(ko);
-      })
+      .then(function(dd){if(!dd.text)return;var ko=dd.text.split("\n").filter(function(l){return l.trim();}).map(function(l){return l.replace(/^\d+\.?\s*/,"").trim();});renderNav(ko);})
       .catch(function(){});
     }
   })
   .catch(function(e){document.getElementById("aorig").textContent="오류: "+e.message;});
 }
-
-function renderNav(koArr) {
+function renderNav(koArr){
   var nav=document.getElementById("anav");
   nav.innerHTML=pChunks.map(function(c,i){
-    var num=fmtNum(c.article_num);
-    var tja=c.article_title||"";
-    var tko=koArr?(koArr[i]||""):(c.article_title_ko||"");
-    var item=document.createElement("div");
-    item.className="aitem"+(i===0?" active":"");
-    item.setAttribute("data-idx",i);
+    var num=fmtNum(c.article_num); var tja=c.article_title||""; var tko=koArr?(koArr[i]||""):(c.article_title_ko||"");
+    var item=document.createElement("div"); item.className="aitem"+(i===0?" active":""); item.setAttribute("data-idx",i);
     var nEl=document.createElement("div");nEl.className="aitem-n";nEl.textContent=num;
-    var tEl=document.createElement("div");
-    var t1=document.createElement("div");t1.className="aitem-t";t1.textContent=tja;
-    tEl.appendChild(t1);
-    if (tko&&tko!==tja){
-      var t2=document.createElement("div");t2.className="aitem-ko";t2.textContent=tko;
-      tEl.appendChild(t2);
-    }
-    item.appendChild(nEl);item.appendChild(tEl);
-    return item.outerHTML;
+    var tEl=document.createElement("div"); var t1=document.createElement("div");t1.className="aitem-t";t1.textContent=tja;tEl.appendChild(t1);
+    if(tko&&tko!==tja){var t2=document.createElement("div");t2.className="aitem-ko";t2.textContent=tko;tEl.appendChild(t2);}
+    item.appendChild(nEl);item.appendChild(tEl); return item.outerHTML;
   }).join("");
-  nav.querySelectorAll(".aitem").forEach(function(el){
-    el.addEventListener("click",function(){selChunk(parseInt(this.getAttribute("data-idx")));});
-  });
+  nav.querySelectorAll(".aitem").forEach(function(el){el.addEventListener("click",function(){selChunk(parseInt(this.getAttribute("data-idx")));});});
 }
-
-function selChunk(idx) {
-  pIdx=idx;
-  document.querySelectorAll(".aitem").forEach(function(el,i){el.classList.toggle("active",i===idx);});
-  showChunk(idx);
-}
-function showChunk(idx) {
-  var c=pChunks[idx];if (!c) return;
+function selChunk(idx){pIdx=idx;document.querySelectorAll(".aitem").forEach(function(el,i){el.classList.toggle("active",i===idx);});showChunk(idx);}
+function showChunk(idx){
+  var c=pChunks[idx];if(!c) return;
   var isJP=pLawId.indexOf("JP")===0;
   var text=isJP?(c.text_ja||c.text_ko||""):(c.text_ko||c.text_ja||"");
   var hdr=c.article_title?fmtNum(c.article_num)+" : "+c.article_title:fmtNum(c.article_num);
   document.getElementById("aorig").textContent=hdr+"\n\n"+text;
   document.getElementById("orig-label").textContent=isJP?"원문 (일본어)":"원문";
-  if (isJP) doTrans(c);
-  else document.getElementById("trans-wrap").style.display="none";
+  if(isJP) doTrans(c); else document.getElementById("trans-wrap").style.display="none";
 }
-function doTrans(c) {
-  var wrap=document.getElementById("trans-wrap");
-  var trans=document.getElementById("atrans");
-  wrap.style.display="block";
-  var k=String(c.id||c.article_num);
-  if (tCache[k]){trans.textContent=tCache[k];return;}
+function doTrans(c){
+  var wrap=document.getElementById("trans-wrap"); var trans=document.getElementById("atrans");
+  wrap.style.display="block"; var k=String(c.id||c.article_num);
+  if(tCache[k]){trans.textContent=tCache[k];return;}
   trans.textContent="번역 중...";
-  fetch(API,{
-    method:"POST",headers:{"Content-Type":"application/json"},
-    body:JSON.stringify({messages:[{role:"user",content:"다음 일본 보험 법령 조문을 자연스러운 한국어로 번역해 주세요.\n\n"+(c.article_title?"조문: "+c.article_num+" "+c.article_title+"\n":"")+(c.text_ja||"")}],system:"일본 보험 법령 전문 번역가. 번역문만 출력.",query:(c.text_ja||"").slice(0,100),stream:false})
-  })
-  .then(function(r){return r.json();})
-  .then(function(d){var t=d.text||"번역 실패";trans.textContent=t;tCache[k]=t;})
+  fetch(API,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({messages:[{role:"user",content:"다음 일본 보험 법령 조문을 자연스러운 한국어로 번역해 주세요.\n\n"+(c.article_title?"조문: "+c.article_num+" "+c.article_title+"\n":"")+(c.text_ja||"")}],system:"일본 보험 법령 전문 번역가. 번역문만 출력.",query:(c.text_ja||"").slice(0,100),stream:false})})
+  .then(function(r){return r.json();}).then(function(d){var t=d.text||"번역 실패";trans.textContent=t;tCache[k]=t;})
   .catch(function(e){trans.textContent="번역 오류: "+e.message;});
 }
 
+/* 해설 자료 패널 */
+var comChunks=[]; var comLawId=""; var comIdx=0; var comTransCache={};
+function openComPanel(id){
+  var law=null; for(var i=0;i<laws.length;i++){if(laws[i].id===id){law=laws[i];break;}} if(!law) return;
+  comLawId=id; comIdx=0; pChunks=[]; pLawId="";
+  document.getElementById("pid").textContent=id;
+  document.getElementById("ptitle").textContent=law.name_ko;
+  document.getElementById("phd").className="phd";
+  document.getElementById("pbody").innerHTML=
+    '<div class="anav" id="anav"></div>'+
+    '<div style="flex:1;overflow:hidden;display:flex;flex-direction:column">'+
+      '<div class="ptabs">'+
+        '<div class="ptab active" id="ctab-ja" onclick="switchComTab(\'ja\')">📄 원문 (일본어)</div>'+
+        '<div class="ptab" id="ctab-ko" onclick="switchComTab(\'ko\')">🇰🇷 한국어 번역</div>'+
+      '</div>'+
+      '<div class="com-body">'+
+        '<div class="author-badge">📝 '+(law.author||'해설자료')+'</div>'+
+        '<div class="com-pane active" id="cpane-ja"><div class="com-text" id="com-text-ja">로딩 중...</div></div>'+
+        '<div class="com-pane" id="cpane-ko"><div class="com-trans" id="com-text-ko">← 한국어 번역 탭을 클릭하면 번역합니다.</div></div>'+
+      '</div>'+
+    '</div>';
+  document.getElementById("overlay").classList.add("open");
+  fetch(SB+"/rest/v1/chunks_v2?law_id=eq."+id+"&select=id,article_num,article_title,text_ja,text_ko,chunk_index&order=chunk_index&limit=500",{headers:{apikey:KEY,Authorization:"Bearer "+KEY}})
+  .then(function(r){return r.json();})
+  .then(function(d){
+    if(!Array.isArray(d)||!d.length){document.getElementById("com-text-ja").textContent="데이터가 없습니다.";return;}
+    comChunks=d; renderComNav(); showComChunk(0);
+  })
+  .catch(function(e){document.getElementById("com-text-ja").textContent="오류: "+e.message;});
+}
+function renderComNav(){
+  var nav=document.getElementById("anav");
+  nav.innerHTML=comChunks.map(function(c,i){
+    var title=(c.article_title||c.article_num||("§"+(i+1))).slice(0,40);
+    return '<div class="aitem aitem-com'+(i===0?" active":"")+'" data-idx="'+i+'"><div class="aitem-n">'+(c.article_num||("§"+(i+1)))+'</div><div><div class="aitem-t" style="white-space:normal;font-size:11px">'+title+'</div></div></div>';
+  }).join("");
+  nav.querySelectorAll(".aitem").forEach(function(el){el.addEventListener("click",function(){selComChunk(parseInt(this.getAttribute("data-idx")));});});
+}
+function selComChunk(idx){
+  comIdx=idx;
+  document.querySelectorAll(".aitem").forEach(function(el,i){el.classList.toggle("active",i===idx);});
+  showComChunk(idx);
+}
+function showComChunk(idx){
+  var c=comChunks[idx]; if(!c) return;
+  var jaText=c.text_ja||c.text_ko||"(내용 없음)";
+  document.getElementById("com-text-ja").textContent=(c.article_title?c.article_title+"\n\n":"")+jaText;
+  var ck=comLawId+"_"+idx;
+  if(comTransCache[ck]) document.getElementById("com-text-ko").textContent=comTransCache[ck];
+  else document.getElementById("com-text-ko").textContent="← 한국어 번역 탭을 클릭하면 번역합니다.";
+}
+function switchComTab(lang){
+  document.getElementById("ctab-ja").classList.toggle("active",lang==="ja");
+  document.getElementById("ctab-ko").classList.toggle("active",lang==="ko");
+  document.getElementById("cpane-ja").classList.toggle("active",lang==="ja");
+  document.getElementById("cpane-ko").classList.toggle("active",lang==="ko");
+  if(lang==="ko"){
+    var c=comChunks[comIdx]; if(!c) return;
+    var ck=comLawId+"_"+comIdx; if(comTransCache[ck]) return;
+    var koEl=document.getElementById("com-text-ko"); koEl.textContent="번역 중...";
+    var src=c.text_ja||c.text_ko||"";
+    fetch(API,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({messages:[{role:"user",content:"다음 일본어 텍스트를 자연스러운 한국어로 번역해 주세요.\n\n"+(c.article_title?c.article_title+"\n":"")+src}],system:"일본 법령 및 법률 해설 전문 번역가. 번역문만 출력하세요.",query:src.slice(0,100),stream:false})})
+    .then(function(r){return r.json();})
+    .then(function(data){var t=data.text||"번역 실패";koEl.textContent=t;comTransCache[ck]=t;})
+    .catch(function(e){koEl.textContent="번역 오류: "+e.message;});
+  }
+}
 document.getElementById("cmpbtn").addEventListener("click",function(){
-  var c=pChunks[pIdx];if (!c) return;
-  closePanel();showPage("chat");
-  document.getElementById("qinput").value="["+pLawId+" "+c.article_num+"] "+(c.article_title||"")+" 에 대해 한일 규제를 비교해 주세요.";
-  document.getElementById("qinput").focus();
+  if(comLawId&&comChunks.length){
+    var c=comChunks[comIdx]; var author="";
+    for(var i=0;i<laws.length;i++){if(laws[i].id===comLawId){author=laws[i].author||comLawId;break;}}
+    closePanel(); showPage("chat");
+    document.getElementById("qinput").value="["+author+" 해설 "+(c?c.article_num:"")+"] 내용을 바탕으로 한일 규제를 비교해 주세요.";
+    document.getElementById("qinput").focus();
+  } else {
+    var c=pChunks[pIdx]; if(!c) return;
+    closePanel(); showPage("chat");
+    document.getElementById("qinput").value="["+pLawId+" "+c.article_num+"] "+(c.article_title||"")+" 에 대해 한일 규제를 비교해 주세요.";
+    document.getElementById("qinput").focus();
+  }
 });
-function closePanel(e) {
-  if (e&&e.target!==document.getElementById("overlay")) return;
+function closePanel(e){
+  if(e&&e.target!==document.getElementById("overlay")) return;
   document.getElementById("overlay").classList.remove("open");
+  comLawId=""; comChunks=[];
 }
 </script>
 </body>
