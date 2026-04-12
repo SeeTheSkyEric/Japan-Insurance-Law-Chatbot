@@ -389,15 +389,30 @@ function addUser(t){
 }
 function addBot(t){
   var d=document.createElement("div"); d.className="msg bot";
+  /* 섹션별로 ## 헤딩 기준으로 분리 */
   var secs=[
-    {re:/##\s*[^\n]*일본[^\n]*\n([\s\S]*?)(?=##|$)/,label:"일본 규제",cls:"sec-jp"},
-    {re:/##\s*[^\n]*한국[^\n]*\n([\s\S]*?)(?=##|$)/,label:"한국 유사 규제",cls:"sec-kr"},
-    {re:/##\s*[^\n]*비교[^\n]*\n([\s\S]*?)$/,label:"한일 비교",cls:"sec-cmp"}
+    {key:"일본", label:"일본 규제", cls:"sec-jp"},
+    {key:"한국", label:"한국 유사 규제", cls:"sec-kr"},
+    {key:"비교", label:"한일 비교", cls:"sec-cmp"}
   ];
+  /* 전체 텍스트를 ## 단위로 쪼개기 */
+  var parts = t.split(/(?=^##\s)/m);
+  var secMap = {};
+  parts.forEach(function(part){
+    var headMatch = part.match(/^##\s*([^\n]+)\n([\s\S]*)/);
+    if(!headMatch) return;
+    var heading = headMatch[1].trim();
+    var body = headMatch[2].trim();
+    secs.forEach(function(s){
+      if(heading.indexOf(s.key)!==-1) secMap[s.key]=body;
+    });
+  });
   var html=""; var matched=false;
   secs.forEach(function(s){
-    var m=t.match(s.re);
-    if(m){matched=true;html+='<div class="section '+s.cls+'"><div class="sec-hd"><div class="dot"></div><div class="sec-title">'+s.label+'</div></div><div class="sec-body">'+marked.parse(m[1].trim())+'</div></div>';}
+    if(secMap[s.key]){
+      matched=true;
+      html+='<div class="section '+s.cls+'"><div class="sec-hd"><div class="dot"></div><div class="sec-title">'+s.label+'</div></div><div class="sec-body">'+marked.parse(secMap[s.key])+'</div></div>';
+    }
   });
   if(!matched) html='<div class="sec-body">'+marked.parse(t)+'</div>';
   var b=document.createElement("div"); b.className="bubble"; b.innerHTML=html;
@@ -468,7 +483,7 @@ function renderList(pdfArr,comArr,side){
     html+=comArr.map(function(l,i){
       var numStr=String(101+i);
       var um=URLMAP[l.id]||null;
-      var btnHtml='<div class="law-btns"><button class="lbtn lbtn-com" onclick="event.stopPropagation();openComPanel(\''+l.id+'\')">📄 전문 보기</button>';
+      var btnHtml='<div class="law-btns"><button class="lbtn lbtn-com" onclick="event.stopPropagation();openComPanel(\''+l.id+'\',\'ja\')">📄 원문 (일본어)</button><button class="lbtn lbtn-com" style="background:#e8f5e9;color:#1b5e20;border-color:#a5d6a7" onclick="event.stopPropagation();openComPanel(\''+l.id+'\',\'ko\')">🇰🇷 한국어 번역</button>';
       if(um){var lbl=BTNLABEL[um.t]||um.t;btnHtml+='<button class="lbtn lbtn-'+um.t+'" onclick="event.stopPropagation();window.open(\''+um.u+'\',\'_blank\')">'+lbl+' 원문</button>';}
       btnHtml+='</div>';
       return '<div class="law-item"><div class="law-row1"><div class="lnum" style="background:#fff8e1;color:#f57f17">'+numStr+'</div><div class="lname">'+l.name_ko+'</div></div>'+(l.author?'<div class="lsub">📝 '+l.author+'</div>':'')+btnHtml+'</div>';
@@ -581,51 +596,38 @@ function doTrans(c){
 
 /* 해설 자료 패널 */
 var comChunks=[]; var comLawId=""; var comIdx=0; var comTransCache={};
-function openComPanel(id){
+function openComPanel(id, startLang){
+  startLang = startLang || 'ja';
   var law=null; for(var i=0;i<laws.length;i++){if(laws[i].id===id){law=laws[i];break;}} if(!law) return;
-  comLawId=id; comIdx=0; pChunks=[]; pLawId="";
+  comLawId=id; comIdx=0; pChunks=[{_id:id}]; pLawId="";
   document.getElementById("pid").textContent=id;
   document.getElementById("ptitle").textContent=law.name_ko;
   document.getElementById("phd").className="phd";
+  var files=COM_FILES[id];
+  var jaUrl=files?(GITHUB_PAGES_BASE+files.ja):"";
+  var koUrl=files?(GITHUB_PAGES_BASE+files.ko):"";
+  var jaActive=startLang==="ja";
   document.getElementById("pbody").innerHTML=
-    '<div class="anav" id="anav"></div>'+
     '<div style="flex:1;overflow:hidden;display:flex;flex-direction:column">'+
       '<div class="ptabs">'+
-        '<div class="ptab active" id="ctab-ja" onclick="switchComTab(\'ja\')">📄 원문 (일본어)</div>'+
-        '<div class="ptab" id="ctab-ko" onclick="switchComTab(\'ko\')">🇰🇷 한국어 번역</div>'+
+        '<div class="ptab '+(jaActive?'active':'')+'" id="ctab-ja" onclick="switchComTab(\'ja\')">📄 원문 (일본어)</div>'+
+        '<div class="ptab '+(!jaActive?'active':'')+'" id="ctab-ko" onclick="switchComTab(\'ko\')">🇰🇷 한국어 번역</div>'+
       '</div>'+
-      '<div class="com-body" style="padding:0;flex:1;overflow:hidden;display:flex;flex-direction:column">'+
-        '<div class="com-pane active" id="cpane-ja" style="flex:1;overflow:hidden;display:flex;flex-direction:column">'+
-          '<div style="padding:8px 16px;flex-shrink:0"><span class="author-badge">📝 '+(law.author||'해설자료')+'</span></div>'+
-          '<div id="com-ja-content" style="flex:1;overflow:hidden"></div>'+
-        '</div>'+
-        '<div class="com-pane" id="cpane-ko" style="flex:1;overflow:hidden;display:flex;flex-direction:column">'+
-          '<div style="padding:8px 16px;flex-shrink:0"><span class="author-badge">📝 '+(law.author||'해설자료')+'</span></div>'+
-          '<div class="com-trans" id="com-text-ko" style="flex:1;overflow-y:auto;padding:16px">← 한국어 번역 탭을 클릭하면 전체 번역합니다.</div>'+
-        '</div>'+
+      '<div style="padding:6px 16px;flex-shrink:0;background:#fafafa;border-bottom:1px solid var(--brd)">'+
+        '<span class="author-badge">📝 '+(law.author||'해설자료')+'</span>'+
+      '</div>'+
+      '<div class="com-pane '+(jaActive?'active':'')+'" id="cpane-ja" style="flex:1;overflow:hidden;'+(jaActive?'display:flex':'display:none')+'">'+
+        (jaUrl
+          ? '<iframe src="'+jaUrl+'#toolbar=1" style="width:100%;height:100%;border:none;min-height:400px"></iframe>'
+          : '<div style="padding:20px;color:#888">PDF 파일을 찾을 수 없습니다.</div>')+
+      '</div>'+
+      '<div class="com-pane '+(!jaActive?'active':'')+'" id="cpane-ko" style="flex:1;overflow:hidden;'+(!jaActive?'display:flex':'display:none')+'">'+
+        (koUrl
+          ? '<iframe src="'+koUrl+'#toolbar=1" style="width:100%;height:100%;border:none;min-height:400px"></iframe>'
+          : '<div style="padding:20px;color:#888">한국어 번역 PDF 파일을 찾을 수 없습니다.</div>')+
       '</div>'+
     '</div>';
   document.getElementById("overlay").classList.add("open");
-  /* filename에서 PDF/docx 판별 */
-  var fname=(law.filename||"");
-  var isPdf=fname.toLowerCase().indexOf(".pdf")!==-1;
-  var BASE="https://seetheskyeric.github.io/Japan-Insurance-Law-Chatbot/docs/";
-  var fileUrl=BASE+fname;
-  var jaWrap=document.getElementById("com-ja-content");
-  if(isPdf){
-    jaWrap.innerHTML='<iframe src="'+fileUrl+'" style="width:100%;height:100%;border:none;min-height:500px"></iframe>';
-  } else {
-    jaWrap.innerHTML='<div class="com-text" id="com-text-ja" style="height:100%;overflow-y:auto;margin:0;border-radius:0;border-left:none;border-right:none;border-bottom:none">로딩 중...</div>';
-    fetch(SB+"/rest/v1/chunks_v2?law_id=eq."+id+"&select=text_ja,text_ko,chunk_index&order=chunk_index&limit=500",{headers:{apikey:KEY,Authorization:"Bearer "+KEY}})
-    .then(function(r){return r.json();})
-    .then(function(d){
-      if(!Array.isArray(d)||!d.length){document.getElementById("com-text-ja").textContent="데이터가 없습니다.";return;}
-      comChunks=d;
-      var fullJa=d.map(function(c){return c.text_ja||c.text_ko||"";}).join("\n\n");
-      document.getElementById("com-text-ja").textContent=fullJa;
-    })
-    .catch(function(e){document.getElementById("com-text-ja").textContent="오류: "+e.message;});
-  }
 }
 function renderComNav(){}
 function selComChunk(idx){}
@@ -633,45 +635,15 @@ function showComChunk(idx){}
 function switchComTab(lang){
   document.getElementById("ctab-ja").classList.toggle("active",lang==="ja");
   document.getElementById("ctab-ko").classList.toggle("active",lang==="ko");
-  var jaEl=document.getElementById("cpane-ja"); var koEl2=document.getElementById("cpane-ko");
-  if(jaEl) jaEl.style.display=lang==="ja"?"flex":"none";
-  if(koEl2) koEl2.style.display=lang==="ko"?"flex":"none";
-  if(lang==="ko"){
-    var koEl=document.getElementById("com-text-ko");
-    /* PDF 번역본이 있으면 iframe으로 직접 표시 */
-    if(comChunks&&comChunks.length===1&&comChunks[0]._koUrl){
-      koEl.innerHTML='<iframe src="'+comChunks[0]._koUrl+'" style="width:100%;height:600px;border:none;min-height:500px" title="한국어 번역본"></iframe>';
-      return;
-    }
-    var ck=comLawId+"_all";
-    if(comTransCache[ck]){koEl.textContent=comTransCache[ck];return;}
-    koEl.textContent="번역 중... (전체 문서 번역, 잠시 기다려 주세요)";
-    /* comChunks가 없으면 DB에서 가져오기 */
-    function doTranslate(chunks){
+  document.getElementById("cpane-ja").classList.toggle("active",lang==="ja");
+  document.getElementById("cpane-ko").classList.toggle("active",lang==="ko");
+  /* display 강제 설정 (com-pane CSS가 display:none 사용) */
+  document.getElementById("cpane-ja").style.display=lang==="ja"?"flex":"none";
+  document.getElementById("cpane-ko").style.display=lang==="ko"?"flex":"none";
+}
       var fullJa=chunks.map(function(c){return c.text_ja||c.text_ko||"";}).join("\n\n");
       var src=fullJa.slice(0,4000);
       fetch(API,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({
-        messages:[{role:"user",content:"다음 일본어 법률 해설 문서를 자연스러운 한국어로 번역해 주세요. 원문의 구조와 형식을 유지해 주세요.\n\n"+src}],
-        system:"일본 법령 및 법률 해설 전문 번역가. 번역문만 출력하세요. 원문 구조를 그대로 유지하세요.",
-        query:src.slice(0,100),stream:false
-      })})
-      .then(function(r){return r.json();})
-      .then(function(data){
-        var t=data.text||"번역 실패";
-        if(fullJa.length>4000) t+="\n\n--- (원문이 길어 앞부분만 번역되었습니다. 전체 원문은 일본어 탭에서 확인하세요.) ---";
-        koEl.textContent=t; comTransCache[ck]=t;
-      })
-      .catch(function(e){koEl.textContent="번역 오류: "+e.message;});
-    }
-    if(comChunks&&comChunks.length){
-      doTranslate(comChunks);
-    } else {
-      fetch(SB+"/rest/v1/chunks_v2?law_id=eq."+comLawId+"&select=text_ja,text_ko,chunk_index&order=chunk_index&limit=500",{headers:{apikey:KEY,Authorization:"Bearer "+KEY}})
-      .then(function(r){return r.json();})
-      .then(function(d){comChunks=d||[];doTranslate(comChunks);})
-      .catch(function(e){koEl.textContent="번역 오류: "+e.message;});
-    }
-  }
 }
 document.getElementById("cmpbtn").addEventListener("click",function(){
   if(comLawId&&comChunks.length){
