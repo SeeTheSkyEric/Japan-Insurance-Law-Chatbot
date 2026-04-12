@@ -641,10 +641,6 @@ function switchComTab(lang){
   document.getElementById("cpane-ja").style.display=lang==="ja"?"flex":"none";
   document.getElementById("cpane-ko").style.display=lang==="ko"?"flex":"none";
 }
-      var fullJa=chunks.map(function(c){return c.text_ja||c.text_ko||"";}).join("\n\n");
-      var src=fullJa.slice(0,4000);
-      fetch(API,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({
-}
 document.getElementById("cmpbtn").addEventListener("click",function(){
   if(comLawId&&comChunks.length){
     var c=comChunks[comIdx]; var author="";
