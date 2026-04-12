@@ -249,6 +249,7 @@ var SYSTEM = [
   "(유사점, 차이점, 실무적 시사점을 표 또는 항목별로 정리)",
   "",
   "중요: 답변은 반드시 '## 일본 규제' 로 시작해야 합니다. 다른 인트로 문장 없이 바로 시작하세요.",
+  "해설·참고자료를 인용할 때는 반드시 '저자명 (ID)' 형식으로 표시하세요. 예: 'Hokan (JP-COM-101)', 'AMT (JP-COM-102)', 'Mori Hamada (JP-COM-103)'",
   "보험 규제와 무관한 질문은 정중히 거절하세요."
 ].join("\n");
 var URLMAP = {
@@ -317,6 +318,22 @@ var URLMAP = {
   "KR-PDF-11":{t:"fss",u:"https://www.fss.or.kr/fss/job/lrgRegItnInfo/list.do?menuNo=200488"}
 };
 var BTNLABEL = {"egov":"e-Gov","fsa":"FSA","law":"법제처","fss":"금융감독원"};
+/* 해설 자료 PDF 파일 매핑 */
+var COM_FILES = {
+  "JP-COM-101": {
+    ja: "docs/%EB%B3%B4%ED%97%98%EC%97%85%EB%B2%95%20%EA%B0%9C%EC%A0%95(%EC%95%88)%20%ED%95%B4%EC%84%A4_Hokan.pdf",
+    ko: "docs/%EB%B3%B4%ED%97%98%EC%97%85%EB%B2%95%20%EA%B0%9C%EC%A0%95(%EC%95%88)%20%ED%95%B4%EC%84%A4_Hokan_KO.pdf"
+  },
+  "JP-COM-102": {
+    ja: "docs/%EB%B3%B4%ED%97%98%EC%97%85%EB%B2%95%20%EA%B0%9C%EC%A0%95(%EC%95%88)%20%ED%95%B4%EC%84%A4_AMT.pdf",
+    ko: "docs/%EB%B3%B4%ED%97%98%EC%97%85%EB%B2%95%20%EA%B0%9C%EC%A0%95(%EC%95%88)%20%ED%95%B4%EC%84%A4_AMT_KO.pdf"
+  },
+  "JP-COM-103": {
+    ja: "docs/%EB%B3%B4%ED%97%98%EC%97%85%EB%B2%95%20%EA%B0%9C%EC%A0%95(%EC%95%88)%20%ED%95%B4%EC%84%A4_Mori%20Hamada.pdf",
+    ko: "docs/%EB%B3%B4%ED%97%98%EC%97%85%EB%B2%95%20%EA%B0%9C%EC%A0%95(%EC%95%88)%20%ED%95%B4%EC%84%A4_Mori%20Hamada_KO.pdf"
+  }
+};
+var GITHUB_PAGES_BASE = "https://seetheskyeric.github.io/Japan-Insurance-Law-Chatbot/";
 function showPage(p) {
   var pages = document.querySelectorAll(".page");
   var tabs  = document.querySelectorAll(".tab");
@@ -404,7 +421,7 @@ function removeLoading(id){var el=document.getElementById("ld"+id);if(el)el.remo
 var laws=[]; var lawsLoaded=false;
 function loadLaws(){
   if(lawsLoaded) return;
-  fetch(SB+"/rest/v1/laws_v2?select=id,country,name_ja,name_ko,source_type,author&order=id",{
+  fetch(SB+"/rest/v1/laws_v2?select=id,country,name_ja,name_ko,source_type,author,filename&order=id",{
     headers:{apikey:KEY,Authorization:"Bearer "+KEY}
   })
   .then(function(r){return r.json();})
@@ -577,24 +594,38 @@ function openComPanel(id){
         '<div class="ptab active" id="ctab-ja" onclick="switchComTab(\'ja\')">📄 원문 (일본어)</div>'+
         '<div class="ptab" id="ctab-ko" onclick="switchComTab(\'ko\')">🇰🇷 한국어 번역</div>'+
       '</div>'+
-      '<div class="com-body">'+
-        '<div class="author-badge">📝 '+(law.author||'해설자료')+'</div>'+
-        '<div class="com-pane active" id="cpane-ja"><div class="com-text" id="com-text-ja">로딩 중...</div></div>'+
-        '<div class="com-pane" id="cpane-ko"><div class="com-trans" id="com-text-ko">← 한국어 번역 탭을 클릭하면 번역합니다.</div></div>'+
+      '<div class="com-body" style="padding:0;flex:1;overflow:hidden;display:flex;flex-direction:column">'+
+        '<div class="com-pane active" id="cpane-ja" style="flex:1;overflow:hidden;display:flex;flex-direction:column">'+
+          '<div style="padding:8px 16px;flex-shrink:0"><span class="author-badge">📝 '+(law.author||'해설자료')+'</span></div>'+
+          '<div id="com-ja-content" style="flex:1;overflow:hidden"></div>'+
+        '</div>'+
+        '<div class="com-pane" id="cpane-ko" style="flex:1;overflow:hidden;display:flex;flex-direction:column">'+
+          '<div style="padding:8px 16px;flex-shrink:0"><span class="author-badge">📝 '+(law.author||'해설자료')+'</span></div>'+
+          '<div class="com-trans" id="com-text-ko" style="flex:1;overflow-y:auto;padding:16px">← 한국어 번역 탭을 클릭하면 전체 번역합니다.</div>'+
+        '</div>'+
       '</div>'+
     '</div>';
   document.getElementById("overlay").classList.add("open");
-  fetch(SB+"/rest/v1/chunks_v2?law_id=eq."+id+"&select=id,article_num,article_title,text_ja,text_ko,chunk_index&order=chunk_index&limit=500",{headers:{apikey:KEY,Authorization:"Bearer "+KEY}})
-  .then(function(r){return r.json();})
-  .then(function(d){
-    if(!Array.isArray(d)||!d.length){document.getElementById("com-text-ja").textContent="데이터가 없습니다.";return;}
-    comChunks=d;
-    /* 전체 텍스트를 하나로 합치기 */
-    var fullJa=d.map(function(c){return c.text_ja||c.text_ko||"";}).join("\n\n");
-    document.getElementById("com-text-ja").textContent=fullJa;
-    document.getElementById("com-text-ko").textContent="← 한국어 번역 탭을 클릭하면 전체 번역합니다.";
-  })
-  .catch(function(e){document.getElementById("com-text-ja").textContent="오류: "+e.message;});
+  /* filename에서 PDF/docx 판별 */
+  var fname=(law.filename||"");
+  var isPdf=fname.toLowerCase().indexOf(".pdf")!==-1;
+  var BASE="https://seetheskyeric.github.io/Japan-Insurance-Law-Chatbot/docs/";
+  var fileUrl=BASE+fname;
+  var jaWrap=document.getElementById("com-ja-content");
+  if(isPdf){
+    jaWrap.innerHTML='<iframe src="'+fileUrl+'" style="width:100%;height:100%;border:none;min-height:500px"></iframe>';
+  } else {
+    jaWrap.innerHTML='<div class="com-text" id="com-text-ja" style="height:100%;overflow-y:auto;margin:0;border-radius:0;border-left:none;border-right:none;border-bottom:none">로딩 중...</div>';
+    fetch(SB+"/rest/v1/chunks_v2?law_id=eq."+id+"&select=text_ja,text_ko,chunk_index&order=chunk_index&limit=500",{headers:{apikey:KEY,Authorization:"Bearer "+KEY}})
+    .then(function(r){return r.json();})
+    .then(function(d){
+      if(!Array.isArray(d)||!d.length){document.getElementById("com-text-ja").textContent="데이터가 없습니다.";return;}
+      comChunks=d;
+      var fullJa=d.map(function(c){return c.text_ja||c.text_ko||"";}).join("\n\n");
+      document.getElementById("com-text-ja").textContent=fullJa;
+    })
+    .catch(function(e){document.getElementById("com-text-ja").textContent="오류: "+e.message;});
+  }
 }
 function renderComNav(){}
 function selComChunk(idx){}
@@ -602,26 +633,44 @@ function showComChunk(idx){}
 function switchComTab(lang){
   document.getElementById("ctab-ja").classList.toggle("active",lang==="ja");
   document.getElementById("ctab-ko").classList.toggle("active",lang==="ko");
-  document.getElementById("cpane-ja").classList.toggle("active",lang==="ja");
-  document.getElementById("cpane-ko").classList.toggle("active",lang==="ko");
+  var jaEl=document.getElementById("cpane-ja"); var koEl2=document.getElementById("cpane-ko");
+  if(jaEl) jaEl.style.display=lang==="ja"?"flex":"none";
+  if(koEl2) koEl2.style.display=lang==="ko"?"flex":"none";
   if(lang==="ko"){
-    var ck=comLawId+"_all"; if(comTransCache[ck]){document.getElementById("com-text-ko").textContent=comTransCache[ck];return;}
-    var koEl=document.getElementById("com-text-ko"); koEl.textContent="번역 중... (전체 문서 번역, 시간이 걸릴 수 있습니다)";
-    /* 전체 텍스트 번역 — 길면 앞 3000자만 */
-    var fullJa=comChunks.map(function(c){return c.text_ja||c.text_ko||"";}).join("\n\n");
-    var src=fullJa.slice(0,4000);
-    fetch(API,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({
-      messages:[{role:"user",content:"다음 일본어 법률 해설 문서를 자연스러운 한국어로 번역해 주세요. 원문의 구조와 형식을 유지해 주세요.\n\n"+src}],
-      system:"일본 법령 및 법률 해설 전문 번역가. 번역문만 출력하세요. 원문 구조를 그대로 유지하세요.",
-      query:src.slice(0,100),stream:false
-    })})
-    .then(function(r){return r.json();})
-    .then(function(data){
-      var t=data.text||"번역 실패";
-      if(fullJa.length>4000) t+=("\n\n--- (원문이 길어 앞부분만 번역되었습니다. 전체 원문은 일본어 탭에서 확인하세요.) ---");
-      koEl.textContent=t; comTransCache[ck]=t;
-    })
-    .catch(function(e){koEl.textContent="번역 오류: "+e.message;});
+    var koEl=document.getElementById("com-text-ko");
+    /* PDF 번역본이 있으면 iframe으로 직접 표시 */
+    if(comChunks&&comChunks.length===1&&comChunks[0]._koUrl){
+      koEl.innerHTML='<iframe src="'+comChunks[0]._koUrl+'" style="width:100%;height:600px;border:none;min-height:500px" title="한국어 번역본"></iframe>';
+      return;
+    }
+    var ck=comLawId+"_all";
+    if(comTransCache[ck]){koEl.textContent=comTransCache[ck];return;}
+    koEl.textContent="번역 중... (전체 문서 번역, 잠시 기다려 주세요)";
+    /* comChunks가 없으면 DB에서 가져오기 */
+    function doTranslate(chunks){
+      var fullJa=chunks.map(function(c){return c.text_ja||c.text_ko||"";}).join("\n\n");
+      var src=fullJa.slice(0,4000);
+      fetch(API,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({
+        messages:[{role:"user",content:"다음 일본어 법률 해설 문서를 자연스러운 한국어로 번역해 주세요. 원문의 구조와 형식을 유지해 주세요.\n\n"+src}],
+        system:"일본 법령 및 법률 해설 전문 번역가. 번역문만 출력하세요. 원문 구조를 그대로 유지하세요.",
+        query:src.slice(0,100),stream:false
+      })})
+      .then(function(r){return r.json();})
+      .then(function(data){
+        var t=data.text||"번역 실패";
+        if(fullJa.length>4000) t+="\n\n--- (원문이 길어 앞부분만 번역되었습니다. 전체 원문은 일본어 탭에서 확인하세요.) ---";
+        koEl.textContent=t; comTransCache[ck]=t;
+      })
+      .catch(function(e){koEl.textContent="번역 오류: "+e.message;});
+    }
+    if(comChunks&&comChunks.length){
+      doTranslate(comChunks);
+    } else {
+      fetch(SB+"/rest/v1/chunks_v2?law_id=eq."+comLawId+"&select=text_ja,text_ko,chunk_index&order=chunk_index&limit=500",{headers:{apikey:KEY,Authorization:"Bearer "+KEY}})
+      .then(function(r){return r.json();})
+      .then(function(d){comChunks=d||[];doTranslate(comChunks);})
+      .catch(function(e){koEl.textContent="번역 오류: "+e.message;});
+    }
   }
 }
 document.getElementById("cmpbtn").addEventListener("click",function(){
