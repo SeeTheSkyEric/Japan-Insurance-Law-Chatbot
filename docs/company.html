@@ -49,10 +49,10 @@ header{background:var(--navy);color:#fff;padding:14px 28px;display:flex;align-it
 .sec:last-child{border-bottom:none}
 .sec-hd{display:flex;align-items:center;gap:8px;margin-bottom:14px}
 .sec-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
-.sec-label{font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--mut)}
+.sec-label{font-size:15px;font-weight:700;color:var(--txt);letter-spacing:0;margin-bottom:2px}
 .sec-body{font-size:14px;line-height:1.85;color:#374151}
 .sec-body ul{padding-left:0;list-style:none}
-.sec-body li{padding:3px 0 3px 16px;position:relative}
+.sec-body li{padding:4px 0 4px 18px;position:relative;margin-bottom:3px}
 .sec-body li::before{content:"\u2022";position:absolute;left:0;color:var(--navy);font-weight:700}
 .sec-body strong{font-weight:600;color:var(--txt)}
 .sec-body p{margin-bottom:6px}
@@ -137,7 +137,7 @@ header{background:var(--navy);color:#fff;padding:14px 28px;display:flex;align-it
       </div>
       <div class="action-btns">
         <button class="btn-share" onclick="shareURL()">&#128279; URL 공유</button>
-        <button class="btn-pdf" onclick="window.print()">&#128196; PDF 저장</button>
+        <button class="btn-pdf" onclick="printWithName()">&#128196; PDF 저장</button>
       </div>
     </div>
     <div class="report-card" id="reportCard"></div>
@@ -244,6 +244,7 @@ function shareURL(){
   if(navigator.clipboard){navigator.clipboard.writeText(url).then(function(){showToast("URL이 클립보드에 복사됐습니다!");});}
   else{prompt("아래 URL을 복사하세요:",url);}
 }
+function printWithName(){var d=new Date();var ds=d.getFullYear()+"."+(("0"+(d.getMonth()+1)).slice(-2))+"."+(("0"+d.getDate()).slice(-2));var co=document.getElementById("resultCompany").textContent||"기업";var prev=document.title;document.title=ds+"_"+co+"_기업분석_한일보험규제챗봇";window.print();setTimeout(function(){document.title=prev;},2000);}
 function showToast(msg){
   var t=document.getElementById("toast");
   t.textContent=msg;
