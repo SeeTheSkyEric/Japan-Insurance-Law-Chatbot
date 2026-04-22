@@ -27,7 +27,7 @@ header{background:var(--navy);color:#fff;padding:14px 28px;display:flex;align-it
 .ltitle{font-family:"Noto Serif KR",serif;font-size:30px;font-weight:700;color:#fff;line-height:1.35;margin-bottom:12px}
 .ltitle em{font-style:normal;color:var(--gold)}
 .ldesc{font-size:13.5px;color:rgba(255,255,255,.6);line-height:1.7;margin-bottom:40px}
-.cards{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.cards{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px}
 .card{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.12);border-radius:14px;padding:24px 20px;cursor:pointer;transition:all .25s;text-align:left}
 .card:hover{background:rgba(255,255,255,.1);border-color:rgba(201,168,76,.5);transform:translateY(-3px)}
 .card-icon{font-size:28px;margin-bottom:12px}
@@ -175,10 +175,17 @@ header{background:var(--navy);color:#fff;padding:14px 28px;display:flex;align-it
         <div class="card-arrow">바로 시작 →</div>
       </div>
       <div class="card" onclick="showPage('laws')">
-        <div class="card-icon">📚</div>
+        <div cl
+ass="card-icon">📚</div>
         <div class="card-title">법령 조회</div>
         <div class="card-desc">법령 원문과 해설·참고자료를 비교하고 한글 번역을 확인하세요.</div>
         <div class="card-arrow">법령 보기 →</div>
+      </div>
+      <div class="card" onclick="location.href='company.html'">
+        <div class="card-icon">🏢</div>
+        <div class="card-title">기업 분석</div>
+        <div class="card-desc">기업명·서비스명을 입력하면 보험업 특화 기업 보고서를 즉시 생성합니다.</div>
+        <div class="card-arrow">분석 시작 →</div>
       </div>
     </div>
   </div>
