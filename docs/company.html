@@ -68,6 +68,13 @@ header{background:var(--navy);color:#fff;padding:14px 28px;display:flex;align-it
 .loading-dots span:nth-child(3){animation-delay:.4s}
 @keyframes bounce{0%,80%,100%{transform:translateY(0)}40%{transform:translateY(-8px)}}
 .loading-txt{font-size:14px;color:var(--mut)}
+.loading-elapsed{font-size:12px;color:var(--mut);margin-top:6px;opacity:.7}
+.error-card{background:#fff5f5;border:1px solid #feb2b2;border-radius:14px;padding:28px;text-align:center;margin-bottom:16px}
+.error-card .err-icon{font-size:28px;margin-bottom:10px}
+.error-card .err-title{font-size:15px;font-weight:600;color:#c53030;margin-bottom:6px}
+.error-card .err-msg{font-size:13px;color:#742a2a;line-height:1.6}
+.error-card .err-retry{margin-top:14px;padding:8px 20px;background:var(--navy);color:#fff;border:none;border-radius:8px;font-size:13px;font-weight:600;font-family:"Noto Sans KR",sans-serif;cursor:pointer}
+.error-card .err-retry:hover{background:var(--navy2)}
 .toast{position:fixed;bottom:28px;left:50%;transform:translateX(-50%);background:var(--navy);color:#fff;padding:10px 22px;border-radius:24px;font-size:13px;font-weight:600;opacity:0;transition:opacity .3s;pointer-events:none;z-index:999}
 .toast.show{opacity:1}
 .share-banner{background:var(--green-l);border:1px solid #a5d6a7;border-radius:10px;padding:12px 16px;margin-bottom:20px;display:none;align-items:center;gap:10px}
@@ -114,10 +121,12 @@ header{background:var(--navy);color:#fff;padding:14px 28px;display:flex;align-it
       <label class="chip"><input type="checkbox" id="opt_news"> 최근 뉴스</label>
     </div>
   </div>
+  <div id="errorEl" style="display:none"></div>
   <div id="loadingEl" style="display:none">
     <div class="loading-card">
       <div class="loading-dots"><span></span><span></span><span></span></div>
       <div class="loading-txt" id="loadingTxt">웹 검색 및 분석 중...</div>
+      <div class="loading-elapsed" id="loadingElapsed"></div>
     </div>
   </div>
   <div class="result-wrap" id="resultWrap">
@@ -155,27 +164,55 @@ function doSearch(){
   currentQuery=q;
   runSearch(q,getOpts());
 }
+function showError(msg,retryQuery){
+  document.getElementById("errorEl").style.display="block";
+  document.getElementById("errorEl").innerHTML=
+    '<div class="error-card">'+
+    '<div class="err-icon">⚠️</div>'+
+    '<div class="err-title">분석 중 오류가 발생했습니다</div>'+
+    '<div class="err-msg">'+msg+'</div>'+
+    '<button class="err-retry" onclick="document.getElementById(\'errorEl\').style.display=\'none\';runSearch(\''+retryQuery+'\',getOpts())">다시 시도</button>'+
+    '</div>';
+}
 function runSearch(query,opts){
   document.getElementById("sbtn").disabled=true;
   document.getElementById("resultWrap").classList.remove("show");
+  document.getElementById("errorEl").style.display="none";
   document.getElementById("loadingEl").style.display="block";
   var msgs=["웹 검색 중...","최신 정보 수집 중...","보고서 작성 중..."];
   var mi=0;
-  var iv=setInterval(function(){mi=(mi+1)%msgs.length;document.getElementById("loadingTxt").textContent=msgs[mi];},2000);
+  var elapsed=0;
+  var iv=setInterval(function(){
+    mi=(mi+1)%msgs.length;
+    elapsed+=2;
+    document.getElementById("loadingTxt").textContent=msgs[mi];
+    document.getElementById("loadingElapsed").textContent=elapsed+"초 경과 중...";
+  },2000);
   fetch(API,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({query:query,options:opts})})
   .then(function(r){return r.json();})
   .then(function(data){
     clearInterval(iv);
     document.getElementById("loadingEl").style.display="none";
+    document.getElementById("loadingElapsed").textContent="";
     document.getElementById("sbtn").disabled=false;
-    if(data.error){showToast("오류: "+data.error);return;}
+    if(data.error){
+      var msg=data.error;
+      if(msg.indexOf("rate limit")>=0||msg.indexOf("rate_limit")>=0){
+        msg="API 사용량 한도에 도달했습니다. 잠시 후(1~2분) 다시 시도해 주세요.";
+      } else if(msg.indexOf("api_key")>=0||msg.indexOf("API_KEY")>=0){
+        msg="API 인증 오류입니다. 관리자에게 문의해 주세요.";
+      }
+      showError(msg,query);
+      return;
+    }
     renderReport(query,data.text||"");
   })
   .catch(function(e){
     clearInterval(iv);
     document.getElementById("loadingEl").style.display="none";
+    document.getElementById("loadingElapsed").textContent="";
     document.getElementById("sbtn").disabled=false;
-    showToast("오류: "+e.message);
+    showError("네트워크 오류: "+e.message,query);
   });
 }
 var SEC_COLORS=["#1a2f6b","#1b5e20","#7b1fa2","#b45309","#c62828","#0277bd"];
