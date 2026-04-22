@@ -11,11 +11,11 @@ export default async function handler(req, res) {
   const opts = options || {};
   const sections = [];
 
-  if (opts.overview !== false) sections.push(`## 1. 기본 정보 및 주요 연혁
+  if (opts.overview !== false) sections.push(`## 1. 기본 정보
 • 설립연도, 본사 소재지, 대표자, 직원 수
 • 상장 여부 (거래소명 / 종목코드)
 • 그룹 구조 및 주요 자회사
-• 창업~현재 주요 마일스톤 5~8개`);
+• 주요 연혁: 창업~현재 주요 이정표 5~8개를 "연도: 사건" 형식의 불릿으로 정리`);
 
   if (opts.business !== false) sections.push(`## 2. 사업 현황
 • 주요 사업 부문 및 핵심 상품·서비스
@@ -28,10 +28,17 @@ export default async function handler(req, res) {
 • 디지털 전환(DX) 추진 현황`);
 
   if (opts.finance !== false) sections.push(`## 4. 주요 재무 정보
-• 최근 3개 회계연도 매출·영업이익·순이익
-• 시가총액 및 주가 현황 (상장사)
-• 배당 정책
-• 주요 재무 지표 (ROE, 손해율 등 해당 시)`);
+가장 최근 회계연도 재무제표 기준으로 아래 항목 중 확인 가능한 것만 불릿으로 정리 (없으면 생략):
+• 총자산
+• 총부채
+• 자기자본
+• 매출액 (영업수익)
+• 영업이익
+• 당기순이익
+• 최신 시가총액 (조회 가능한 가장 최근 날짜 기준)
+• 최신 주가 및 기준일 (상장사)
+• 배당 정책 (해당 시)
+• 주요 재무 지표: ROE, 손해율, 지급여력비율 등 보험업 해당 항목만`);
 
   if (opts.insurance !== false) sections.push(`## 5. 보험업 특화 정보
 • 보험 인허가 현황 (취급 보험 종류)
