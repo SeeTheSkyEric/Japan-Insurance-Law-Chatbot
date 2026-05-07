@@ -397,23 +397,21 @@ function addUser(t){
 }
 function addBot(t){
   var d=document.createElement("div"); d.className="msg bot";
-  /* 섹션별로 ## 헤딩 기준으로 분리 */
   var secs=[
-    {key:"일본", label:"일본 규제", cls:"sec-jp"},
-    {key:"한국", label:"한국 유사 규제", cls:"sec-kr"},
-    {key:"비교", label:"한일 비교", cls:"sec-cmp"}
+    {key:"일본 규제", label:"일본 규제", cls:"sec-jp"},
+    {key:"한국 유사 규제", label:"한국 유사 규제", cls:"sec-kr"},
+    {key:"한일 비교", label:"한일 비교", cls:"sec-cmp"}
   ];
-  /* 전체 텍스트를 ## 단위로 쪼개기 */
-  var parts = t.split(/(?=^##\s)/m);
-  var secMap = {};
-  parts.forEach(function(part){
-    var headMatch = part.match(/^##\s*([^\n]+)\n([\s\S]*)/);
-    if(!headMatch) return;
-    var heading = headMatch[1].trim();
-    var body = headMatch[2].trim();
-    secs.forEach(function(s){
-      if(heading.indexOf(s.key)!==-1) secMap[s.key]=body;
-    });
+  /* 각 섹션의 시작 위치를 찾고, 다음 ## 헤딩 직전까지만 슬라이싱 */
+  var secMap={};
+  secs.forEach(function(s){
+    var re=new RegExp("##\\s*"+s.key+"\\s*\\n");
+    var m=t.match(re);
+    if(!m) return;
+    var startIdx=t.indexOf(m[0])+m[0].length;
+    var rest=t.slice(startIdx);
+    var nextHeading=rest.search(/\n##\s/);
+    secMap[s.key]=(nextHeading>=0?rest.slice(0,nextHeading):rest).trim();
   });
   var html=""; var matched=false;
   secs.forEach(function(s){
