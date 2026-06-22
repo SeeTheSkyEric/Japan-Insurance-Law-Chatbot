@@ -217,6 +217,9 @@ function runSearch(query,opts){
 }
 var SEC_COLORS=["#1a2f6b","#1b5e20","#7b1fa2","#b45309","#c62828","#0277bd"];
 function renderReport(query,text){
+  // 유니코드 이스케이프 및 제어문자 정제
+  text = text.replace(/\\u([0-9a-fA-F]{4})/g, function(m,p){return String.fromCharCode(parseInt(p,16));});
+  text = text.replace(/[\u0000-\u0008\u000b\u000c\u000e-\u001f]/g, "");
   document.getElementById("resultCompany").textContent=query;
   document.getElementById("resultMeta").textContent="기업 분석 보고서 · "+new Date().toLocaleDateString("ko-KR",{year:"numeric",month:"long",day:"numeric"})+" 기준 · AI 웹검색 기반";
   var parts=text.split(/\n(?=## )/);
