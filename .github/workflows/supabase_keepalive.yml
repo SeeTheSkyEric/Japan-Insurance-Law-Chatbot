@@ -1,0 +1,22 @@
+name: Supabase Keep-Alive
+
+# Supabase 무료 프로젝트는 7일간 API 요청이 없으면 자동 일시정지된다.
+# 매일 1회 REST API에 요청을 보내 '활성' 상태로 유지한다(정지 방지).
+
+on:
+  schedule:
+    - cron: '30 0 * * *'   # 매일 00:30 UTC = 09:30 KST (하루 1번이면 7일 공백 방지에 충분)
+  workflow_dispatch:        # 수동 실행 버튼
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Ping Supabase REST API
+        run: |
+          echo "Supabase 프로젝트에 keep-alive 요청 전송..."
+          curl -sS -o /dev/null -w "응답 코드: %{http_code}\n" \
+            "https://rkkzpzkzhntmrblbqiis.supabase.co/rest/v1/" \
+            -H "apikey: ${{ secrets.SUPABASE_ANON_KEY }}" \
+            -H "Authorization: Bearer ${{ secrets.SUPABASE_ANON_KEY }}"
+          echo "완료. (200이면 정상 활성화)"
